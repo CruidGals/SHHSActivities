@@ -11,7 +11,7 @@ data class Club(
     var administrators: List<Person>,
     var members: List<Person>,
     var announcements: List<Announcement>,
-    var id: Int
+    var id: String
 )
 
 data class Announcement(
