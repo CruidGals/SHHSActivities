@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.shhsactivities.data.Announcement
 import com.example.shhsactivities.data.Club
 import com.example.shhsactivities.ui.events.UiEvent
-import com.example.shhsactivities.ui.states.AnnouncementRetrievalState
+import com.example.shhsactivities.ui.states.AnnouncementsRetrievalState
 import com.example.shhsactivities.ui.states.ClubRetrievalState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -24,11 +24,12 @@ class ClubViewModel @Inject constructor(
 
     data class ClubUIState(
         val clubState: ClubRetrievalState = ClubRetrievalState.Loading,
-        val announcementState: AnnouncementRetrievalState = AnnouncementRetrievalState.Loading,
+        val announcementState: AnnouncementsRetrievalState = AnnouncementsRetrievalState.Loading,
         val clubId: String= ""
     )
 
     var clubUiState by mutableStateOf(ClubUIState())
+        private set
 
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
