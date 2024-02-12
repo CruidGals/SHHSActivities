@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "536639337930",
+    "project_id": "shhsclubsdb",
+    "storage_bucket": "shhsclubsdb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:536639337930:android:d74a636ac684ba70648b33",
+        "android_client_info": {
+          "package_name": "com.example.shhsactivities"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOZdP7v05z4eeV-iyFZmJ8sY0BxLES1u8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
