@@ -6,8 +6,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.shhsactivities.data.Announcement
-import com.example.shhsactivities.data.Club
+import com.example.shhsactivities.data.models.Announcement
+import com.example.shhsactivities.data.models.Club
 import com.example.shhsactivities.ui.events.UiEvent
 import com.example.shhsactivities.ui.states.AnnouncementsRetrievalState
 import com.example.shhsactivities.ui.states.ClubRetrievalState
@@ -15,6 +15,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
@@ -46,10 +47,16 @@ class ClubViewModel @Inject constructor(
 
     fun queryClubById(id: String) = viewModelScope.launch {
         try {
-            val club: Club = Club() //TODO Call from backend of repository
+            val club: Club? = null //TODO Call from backend of repository
+            club?.let { club ->
+                clubUiState = clubUiState.copy(
+                    clubState = ClubRetrievalState.Success(club),
+                    clubId = club.id
+                )
+            }
+        } catch (e: Exception) {
             clubUiState = clubUiState.copy(
-                clubState = ClubRetrievalState.Success(club),
-                clubId = club.id
+                clubState = ClubRetrievalState.Error
             )
         }
     }

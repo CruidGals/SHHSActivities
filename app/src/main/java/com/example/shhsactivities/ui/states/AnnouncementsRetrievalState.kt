@@ -1,6 +1,6 @@
 package com.example.shhsactivities.ui.states
 
-import com.example.shhsactivities.data.Announcement
+import com.example.shhsactivities.data.models.Announcement
 
 sealed interface AnnouncementsRetrievalState {
 

@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.shhsactivities.data.Club
+import com.example.shhsactivities.data.models.Club
 import com.example.shhsactivities.ui.states.ClubsRetrievalState
 import com.example.shhsactivities.ui.viewmodels.components.ClubOrder
 import com.example.shhsactivities.ui.viewmodels.components.OrderDirection
@@ -44,8 +44,4 @@ class HomeViewModel: ViewModel() {
             }
         }
     }
-}
-
-sealed class HomeScreenEvent {
-
 }
