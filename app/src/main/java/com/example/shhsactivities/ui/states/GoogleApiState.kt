@@ -4,9 +4,9 @@ import com.example.shhsactivities.data.models.UserData
 
 sealed interface GoogleApiState {
 
-    data class Success(val userData: UserData): GoogleApiState
+    data class Success(val userData: UserData?): GoogleApiState
 
-    data object Loading(): GoogleApiState
+    data object Loading: GoogleApiState
 
     data class Error(val e: Exception): GoogleApiState
 }
