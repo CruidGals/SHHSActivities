@@ -6,7 +6,5 @@ sealed interface GoogleApiState {
 
     data class Success(val userData: UserData?): GoogleApiState
 
-    data object Loading: GoogleApiState
-
     data class Error(val e: Exception): GoogleApiState
 }

@@ -14,7 +14,7 @@ import kotlinx.coroutines.tasks.await
 import java.util.concurrent.CancellationException
 import javax.inject.Inject
 
-class GoogleAuthApi @Inject constructor(
+class GoogleAuthApi (
     private val context: Context,
     private val oneTapClient: SignInClient,
     private val auth: FirebaseAuth
