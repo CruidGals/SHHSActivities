@@ -54,7 +54,7 @@ class GoogleAuthApi (
             GoogleApiState.Success(
                 userData = user?.run {
                     UserData(
-                        userId = uid,
+                        uid = uid,
                         email = email,
                         username = displayName,
                         profilePictureUrl = photoUrl?.toString(),
@@ -71,7 +71,7 @@ class GoogleAuthApi (
 
     fun getSignedInUser(): UserData? = auth.currentUser?.run {
         UserData(
-            userId = uid,
+            uid = uid,
             email = email,
             username = displayName,
             profilePictureUrl = photoUrl?.toString(),
