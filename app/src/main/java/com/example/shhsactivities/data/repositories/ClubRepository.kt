@@ -26,23 +26,27 @@ class ClubRepository {
 
     }
 
+    suspend fun getClubByName(name: String): DocumentSnapshot? {
+        return getClubsByQuery("name", name)[0]
+    }
+
     /*
         Returns the physical "document" of club from firebase
         Use toObject() function to convert back to Club
      */
-    suspend fun getClubByName(name: String): DocumentSnapshot? {
-        var club: DocumentSnapshot? = null
+    private suspend fun getClubsByQuery(queryName: String, query: Any): List<DocumentSnapshot?> {
+        var clubs: List<DocumentSnapshot?> = listOf()
 
         try {
             db.collection("clubs")
-                .whereEqualTo("name", name)
+                .whereEqualTo(queryName, query)
                 .get()
                 .addOnSuccessListener {
                     try {
-                        club = it.documents[0]
-                        Log.d(TAG, "Club with name: $name retrieved.")
+                        clubs = it.documents
+                        Log.d(TAG, "Club with $queryName: $query retrieved.")
                     } catch (e: Exception) {
-                        Log.w(TAG, "Club with name: $name not found.")
+                        Log.w(TAG, "Club with $queryName: $query not found.")
                     }
                 }
                 .addOnFailureListener {
@@ -53,7 +57,7 @@ class ClubRepository {
             if (e is CancellationException) throw e
         }
 
-        return club
+        return clubs
     }
 
     companion object {
