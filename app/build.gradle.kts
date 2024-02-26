@@ -70,6 +70,8 @@ dependencies {
     //Dagger - Hilt
     implementation("com.google.dagger:hilt-android:2.47")
     kapt("com.google.dagger:hilt-compiler:2.47")
+    kapt("androidx.hilt:hilt-compiler:1.2.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     //Firestore
     implementation("com.google.firebase:firebase-firestore:24.10.2")

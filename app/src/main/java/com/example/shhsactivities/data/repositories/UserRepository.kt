@@ -8,21 +8,25 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.tasks.await
 import java.util.concurrent.CancellationException
+import javax.inject.Singleton
 
 class UserRepository {
     private val db = Firebase.firestore
 
-    fun addUser(document: UserData) {
-        db.collection("users")
-            .add(document)
-            .addOnSuccessListener {
-                Log.d(TAG, "User added with ID: ${it.id}")
-            }
-            .addOnFailureListener {
-                Log.w(TAG, "Error adding user", it)
-            }
-
-
+    suspend fun addUser(document: UserData) {
+        try {
+            db.collection("users")
+                .add(document)
+                .addOnSuccessListener {
+                    Log.d(TAG, "User added with ID: ${it.id}")
+                }
+                .addOnFailureListener {
+                    Log.w(TAG, "Error adding user", it)
+                }.await()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            if (e is CancellationException) throw e
+        }
     }
 
     /*
