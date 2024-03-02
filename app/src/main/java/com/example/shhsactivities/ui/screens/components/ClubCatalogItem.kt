@@ -1,6 +1,7 @@
 package com.example.shhsactivities.ui.screens.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,20 +26,27 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.shhsactivities.data.models.Club
 import com.example.shhsactivities.ui.theme.Typography
+import kotlinx.coroutines.launch
 
 @Composable
 fun ClubCatalogItem(
     club: Club,
     modifier: Modifier = Modifier,
-    onClick: (id: Int) -> Unit
+    onClick: (name: String) -> Unit
 ) {
     val scope = rememberCoroutineScope()
 
     Box(modifier = Modifier
         .padding(8.dp)
-        .clip(RoundedCornerShape(25))) {
+        .clip(RoundedCornerShape(25))
+        .clickable {
+            scope.launch {
+                onClick(club.name)
+            }
+        }
+    ) {
         Row (modifier = Modifier
-            .background(Color.White)
+            .background(club.category.color)
             .then(modifier)
         ){
             Column (
