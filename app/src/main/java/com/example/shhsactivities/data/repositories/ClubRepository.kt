@@ -30,14 +30,18 @@ class ClubRepository {
         }
     }
 
-    suspend fun getClubByName(name: String): DocumentSnapshot? {
+    suspend fun getAllClubs(): List<DocumentSnapshot> {
+        return getClubsByQuery(Filter(), "all", "none")
+    }
+
+    suspend fun getClubByName(name: String): DocumentSnapshot {
         return getClubsByQuery(Filter.equalTo("name", name), "name", name)[0]
     }
 
     /*
         Member is a documentReference from users collection
      */
-    suspend fun getClubsByMember(member: DocumentReference): List<DocumentSnapshot?> {
+    suspend fun getClubsByMember(member: DocumentReference): List<DocumentSnapshot> {
         return getClubsByQuery(Filter.arrayContains("members", member), "member", member.id)
     }
 
@@ -46,8 +50,8 @@ class ClubRepository {
         Use toObject() function to convert back to Club
         Parameters queryName and query or used for logcat
      */
-    private suspend fun getClubsByQuery(filter: Filter, queryName: String = "", query: Any = ""): List<DocumentSnapshot?> {
-        var clubs: List<DocumentSnapshot?> = listOf()
+    private suspend fun getClubsByQuery(filter: Filter, queryName: String = "", query: Any = ""): List<DocumentSnapshot> {
+        var clubs: List<DocumentSnapshot> = listOf()
 
         try {
             db.collection("clubs")
