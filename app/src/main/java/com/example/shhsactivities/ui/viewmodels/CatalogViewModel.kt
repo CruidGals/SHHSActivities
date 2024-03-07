@@ -1,15 +1,14 @@
 package com.example.shhsactivities.ui.viewmodels
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shhsactivities.data.models.Club
 import com.example.shhsactivities.data.repositories.ClubRepository
 import com.example.shhsactivities.ui.states.ClubsRetrievalState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,29 +21,36 @@ class CatalogViewModel @Inject constructor(
         val searchQuery: String = ""
     )
 
-    var catalogUiState by mutableStateOf(CatalogUiState())
+    lateinit var allClubs: List<Club>
         private set
+
+    private val _state = MutableStateFlow(CatalogUiState())
+    val state = _state.asStateFlow()
 
     init {
         viewModelScope.launch {
-            val clubs = clubRepository.getAllClubs()
+            allClubs = clubRepository.getAllClubs().map {
+                it.toObject(Club::class.java)!!
+            }
 
 
-            when (clubs.size) {
+            when (allClubs.size) {
                 0 -> {
-                    catalogUiState = catalogUiState.copy(
-                        clubsState = ClubsRetrievalState.Error
-                    )
+                    _state.update {
+                        CatalogUiState(
+                            clubsState = ClubsRetrievalState.Error
+                        )
+                    }
                 }
 
                 else -> {
-                    catalogUiState = catalogUiState.copy(
-                        clubsState = ClubsRetrievalState.Success(
-                            clubs = clubs.map {
-                                it.toObject(Club::class.java)!!
-                            }
+                    _state.update {
+                        CatalogUiState (
+                            clubsState = ClubsRetrievalState.Success(
+                                clubs = allClubs
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
@@ -56,11 +62,20 @@ class CatalogViewModel @Inject constructor(
         
     }
 
+    fun getShownClubs(): List<Club> {
+        return when(state.value.clubsState) {
+            is ClubsRetrievalState.Success -> (state.value.clubsState as ClubsRetrievalState.Success).clubs
+            else -> listOf<Club>()
+        }
+    }
+
     private fun editSearchQuery(query: String) {
         viewModelScope.launch {
-            catalogUiState = catalogUiState.copy(
-                searchQuery = query
-            )
+            _state.update {
+                CatalogUiState (
+                    searchQuery = query
+                )
+            }
         }
     }
 }
