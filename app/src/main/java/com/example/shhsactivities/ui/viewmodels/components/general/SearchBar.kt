@@ -63,7 +63,6 @@ fun SearchBar(
             enabled = enabled,
             modifier = Modifier
                 .weight(1f)
-                .focusRequester(focusRequester)
                 .onFocusChanged {
                     showCancelButton = it.isFocused
                 },
@@ -72,8 +71,7 @@ fun SearchBar(
             interactionSource = interactionSource
         ) { innerTextField ->
             Surface(
-                shape = RoundedCornerShape(8.dp),
-                color = Color.LightGray
+                shape = RoundedCornerShape(16.dp)
             ) {
                 TextFieldDefaults.DecorationBox(
                     value = query,
@@ -85,7 +83,7 @@ fun SearchBar(
                     placeholder = {
                         Text(
                             text = placeHolderText,
-                            color = Color.Gray
+                            color = Color.DarkGray
                         )
                     },
                     leadingIcon = {
@@ -115,6 +113,8 @@ fun SearchBar(
                     colors = TextFieldDefaults.colors(
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
+                        focusedContainerColor = Color.Gray,
+                        unfocusedContainerColor = Color.Gray,
                     )
                 )
             }

@@ -31,7 +31,20 @@ class ClubRepository {
     }
 
     suspend fun getAllClubs(): List<DocumentSnapshot> {
-        return getClubsByQuery(Filter(), "all", "none")
+        var clubs: List<DocumentSnapshot> = listOf()
+
+        try {
+            val result = db.collection("clubs")
+                .get()
+                .await() // Use await() to wait for the operation to complete in a suspend function
+
+            clubs = result.documents
+            Log.d(TAG, "Retrieved ${clubs.size} clubs.")
+        } catch (e: Exception) {
+            Log.w(TAG, "Error retrieving clubs", e)
+        }
+
+        return clubs
     }
 
     suspend fun getClubByName(name: String): DocumentSnapshot {

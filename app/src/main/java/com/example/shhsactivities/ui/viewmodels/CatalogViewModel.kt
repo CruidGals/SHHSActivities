@@ -1,5 +1,6 @@
 package com.example.shhsactivities.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shhsactivities.data.models.Club
@@ -7,7 +8,10 @@ import com.example.shhsactivities.data.repositories.ClubRepository
 import com.example.shhsactivities.ui.states.ClubsRetrievalState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -16,66 +20,45 @@ import javax.inject.Inject
 class CatalogViewModel @Inject constructor(
     private val clubRepository: ClubRepository
 ): ViewModel() {
-    data class CatalogUiState (
-        val clubsState: ClubsRetrievalState = ClubsRetrievalState.Loading,
-        val searchQuery: String = ""
+    private var _allClubs: List<Club> = emptyList()
+    val allClubs get() = _allClubs
+
+
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery = _searchQuery.asStateFlow()
+
+    //TODO add filter flow
+
+    private val _clubsQueried = MutableStateFlow(ClubsRetrievalState.Success(allClubs))
+    val clubsQueried = searchQuery
+        .combine(_clubsQueried) { text, clubs ->
+            if (text.isBlank()) {
+                clubs
+            }
+            else {
+                ClubsRetrievalState.Success(
+                    clubs.clubs.filter {
+                        it.name.contains(text, ignoreCase = true)
+                    }
+                )
+            }
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        _clubsQueried.value
     )
-
-    lateinit var allClubs: List<Club>
-        private set
-
-    private val _state = MutableStateFlow(CatalogUiState())
-    val state = _state.asStateFlow()
 
     init {
         viewModelScope.launch {
-            allClubs = clubRepository.getAllClubs().map {
+            _allClubs = clubRepository.getAllClubs().map {
                 it.toObject(Club::class.java)!!
             }
-
-
-            when (allClubs.size) {
-                0 -> {
-                    _state.update {
-                        CatalogUiState(
-                            clubsState = ClubsRetrievalState.Error
-                        )
-                    }
-                }
-
-                else -> {
-                    _state.update {
-                        CatalogUiState (
-                            clubsState = ClubsRetrievalState.Success(
-                                clubs = allClubs
-                            )
-                        )
-                    }
-                }
-            }
         }
+
+        _clubsQueried.value = ClubsRetrievalState.Success(allClubs)
     }
 
-    fun filterClubsBySearchQuery(query: String) {
-        editSearchQuery(query)
-
-        
-    }
-
-    fun getShownClubs(): List<Club> {
-        return when(state.value.clubsState) {
-            is ClubsRetrievalState.Success -> (state.value.clubsState as ClubsRetrievalState.Success).clubs
-            else -> listOf<Club>()
-        }
-    }
-
-    private fun editSearchQuery(query: String) {
-        viewModelScope.launch {
-            _state.update {
-                CatalogUiState (
-                    searchQuery = query
-                )
-            }
-        }
+    fun editSearchQuery(query: String) {
+        _searchQuery.value = query
     }
 }
