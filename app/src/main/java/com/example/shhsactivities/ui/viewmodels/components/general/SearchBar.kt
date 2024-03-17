@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -83,6 +84,7 @@ fun SearchBar(
                     singleLine = true,
                     visualTransformation = VisualTransformation.None,
                     interactionSource = interactionSource,
+                    contentPadding = PaddingValues(0.dp),
                     placeholder = {
                         Text(
                             text = placeHolderText,
