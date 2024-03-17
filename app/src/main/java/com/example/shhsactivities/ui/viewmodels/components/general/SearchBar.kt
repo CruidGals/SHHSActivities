@@ -5,7 +5,9 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -63,6 +65,7 @@ fun SearchBar(
             enabled = enabled,
             modifier = Modifier
                 .weight(1f)
+                .height(45.dp)
                 .onFocusChanged {
                     showCancelButton = it.isFocused
                 },
