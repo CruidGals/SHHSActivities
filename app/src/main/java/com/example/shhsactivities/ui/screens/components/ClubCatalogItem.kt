@@ -32,7 +32,7 @@ import kotlinx.coroutines.launch
 fun ClubCatalogItem(
     club: Club,
     modifier: Modifier = Modifier,
-    onClick: (name: String) -> Unit
+    onClick: (club: Club) -> Unit
 ) {
     val scope = rememberCoroutineScope()
 
@@ -41,7 +41,7 @@ fun ClubCatalogItem(
         .clip(RoundedCornerShape(25))
         .clickable {
             scope.launch {
-                onClick(club.name)
+                onClick(club)
             }
         }
     ) {

@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shhsactivities.data.models.Club
+import com.example.shhsactivities.data.models.ClubCategory
 import com.example.shhsactivities.data.repositories.ClubRepository
 import com.example.shhsactivities.ui.states.ClubsRetrievalState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -54,11 +55,34 @@ class CatalogViewModel @Inject constructor(
                 it.toObject(Club::class.java)!!
             }
         }
+        _allClubs = testClubs //TESTING
 
         _clubsQueried.value = ClubsRetrievalState.Success(allClubs)
     }
 
     fun editSearchQuery(query: String) {
         _searchQuery.value = query
+        Log.d("Catalog", _clubsQueried.value.clubs.size.toString())
     }
 }
+
+val testClubs = listOf(
+    Club(
+        name = "Horror Club",
+        room = "345",
+        meetingFrequency = "Every Monday",
+        category = ClubCategory.HOBBY_AND_SPECIAL_INTERESTS
+    ),
+    Club(
+        name = "Anime Club",
+        room = "169",
+        meetingFrequency = "Every Day!!",
+        category = ClubCategory.HOBBY_AND_SPECIAL_INTERESTS
+    ),
+    Club(
+        name = "Basketball Club",
+        room = "Gym",
+        meetingFrequency = "Every Tuesday and Thursday",
+        category = ClubCategory.ATHLETICS
+    )
+)

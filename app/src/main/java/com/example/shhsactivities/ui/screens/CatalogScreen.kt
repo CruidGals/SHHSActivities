@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,7 +29,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shhsactivities.data.models.Club
 import com.example.shhsactivities.ui.theme.Typography
 import com.example.shhsactivities.ui.viewmodels.CatalogViewModel
-import com.example.shhsactivities.ui.viewmodels.components.general.SearchBar
+import com.example.shhsactivities.ui.components.general.SearchBar
+import com.example.shhsactivities.ui.screens.components.ClubCatalogItem
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -120,12 +122,10 @@ fun CatalogScreen(
                     modifier = Modifier.padding(vertical = 8.dp, horizontal = 10.dp)
                 )
             }
+
+            items(queriedClubs.clubs) { club ->
+                ClubCatalogItem(club = club) { onClickClub(it) }
+            }
         }
     }
-}
-
-@Preview
-@Composable
-fun PreviewCatalogScreen() {
-    CatalogScreen( onClickClub = {})
 }

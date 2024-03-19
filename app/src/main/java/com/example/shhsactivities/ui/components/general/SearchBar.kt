@@ -1,4 +1,4 @@
-package com.example.shhsactivities.ui.viewmodels.components.general
+package com.example.shhsactivities.ui.components.general
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
