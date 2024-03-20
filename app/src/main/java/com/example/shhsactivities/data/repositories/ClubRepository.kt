@@ -47,6 +47,27 @@ class ClubRepository {
         return clubs
     }
 
+    suspend fun getClubById(id: String): DocumentSnapshot? {
+        var club: DocumentSnapshot? = null
+
+        try {
+            val result = db.collection("clubs")
+                .get()
+                .await() // Use await() to wait for the operation to complete in a suspend function
+
+            club = result.documents.find { it.id == id }
+            if (club != null) {
+                Log.d(TAG, "Retrieved club with id $id")
+            } else {
+                Log.d(TAG, "No club with id $id")
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "Error retrieving clubs", e)
+        }
+
+        return club
+    }
+
     suspend fun getClubByName(name: String): DocumentSnapshot {
         return getClubsByQuery(Filter.equalTo("name", name), "name", name)[0]
     }

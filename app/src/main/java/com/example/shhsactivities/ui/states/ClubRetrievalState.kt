@@ -8,6 +8,6 @@ sealed interface ClubRetrievalState {
 
     data object Loading: ClubRetrievalState
 
-    data object Error: ClubRetrievalState
+    data object Error : ClubRetrievalState
 
 }

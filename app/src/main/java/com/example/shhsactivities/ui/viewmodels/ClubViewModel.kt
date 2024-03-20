@@ -8,56 +8,42 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shhsactivities.data.models.Announcement
 import com.example.shhsactivities.data.models.Club
-import com.example.shhsactivities.ui.events.UiEvent
-import com.example.shhsactivities.ui.states.AnnouncementsRetrievalState
+import com.example.shhsactivities.data.repositories.ClubRepository
 import com.example.shhsactivities.ui.states.ClubRetrievalState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
 class ClubViewModel @Inject constructor(
+    private val clubRepository: ClubRepository,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
-    data class ClubUIState(
-        val clubState: ClubRetrievalState = ClubRetrievalState.Loading,
-        val announcementState: AnnouncementsRetrievalState = AnnouncementsRetrievalState.Loading,
-        val clubId: String= ""
-    )
+    private val _clubState = MutableStateFlow<ClubRetrievalState>(ClubRetrievalState.Loading)
+    val clubState = _clubState.asStateFlow()
 
-    var clubUiState by mutableStateOf(ClubUIState())
+    var club: Club? by mutableStateOf(Club())
         private set
 
-    private val _uiEvent = Channel<UiEvent>()
-    val uiEvent = _uiEvent.receiveAsFlow()
-
-    var club = mutableStateOf<Club?>(null)
+    var clubId by mutableStateOf("")
+        private set
 
     init {
-        savedStateHandle.get<Int>("clubId")?.let { id ->
+        savedStateHandle.get<String>("clubId")?.let { id ->
             viewModelScope.launch {
-                //get club by ID through repository given by FireBase
-            }
-        }
-    }
+                club = clubRepository.getClubById(id)?.toObject(Club::class.java)
+                clubId = id
 
-    fun queryClubById(id: String) = viewModelScope.launch {
-        try {
-            val club: Club? = null //TODO Call from backend of repository
-            club?.let { club ->
-                clubUiState = clubUiState.copy(
-                    clubState = ClubRetrievalState.Success(club),
-                    clubId = club.id
-                )
+                _clubState.value = if(club == null) {
+                    ClubRetrievalState.Error
+                } else {
+                    ClubRetrievalState.Success(club!!)
+                }
             }
-        } catch (e: Exception) {
-            clubUiState = clubUiState.copy(
-                clubState = ClubRetrievalState.Error
-            )
         }
     }
 
@@ -67,12 +53,6 @@ class ClubViewModel @Inject constructor(
             is ClubScreenEvent.OnClubPictureClick -> TODO()
             is ClubScreenEvent.OnGoalClick -> TODO()
             is ClubScreenEvent.OnRosterClick -> TODO()
-        }
-    }
-
-    private fun sendUiEvent(event: UiEvent){
-        viewModelScope.launch {
-            _uiEvent.send(event)
         }
     }
 }
