@@ -44,8 +44,8 @@ fun CatalogScreen(
     onClickClub: (club: Club) -> Unit,
     viewModel: CatalogViewModel = hiltViewModel()
 ) {
-    var searchQuery = viewModel.searchQuery.collectAsState().value
-    var queriedClubs = viewModel.clubsQueried.collectAsState().value
+    val searchQuery = viewModel.searchQuery.collectAsState().value
+    val queriedClubs = viewModel.clubsQueried.collectAsState().value
     val focusRequester = remember{FocusRequester()}
 
     Box(

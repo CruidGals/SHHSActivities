@@ -18,6 +18,7 @@ data class Club(
     val imageUrl: String? = "",
     val room: String? = "",
     val meetingFrequency: String? = "",
+    val description: String? = "",
     val category: ClubCategory = ClubCategory.COMMUNITY_AND_SERVICE,
     val administrators: List<DocumentReference?> = listOf(),
     val members: List<DocumentReference?> = listOf(),

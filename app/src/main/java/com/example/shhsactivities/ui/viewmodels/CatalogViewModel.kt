@@ -84,5 +84,41 @@ val testClubs = listOf(
         room = "Gym",
         meetingFrequency = "Every Tuesday and Thursday",
         category = ClubCategory.ATHLETICS
+    ),
+    Club(
+        name = "Horror Club",
+        room = "345",
+        meetingFrequency = "Every Monday",
+        category = ClubCategory.HOBBY_AND_SPECIAL_INTERESTS
+    ),
+    Club(
+        name = "Anime Club",
+        room = "169",
+        meetingFrequency = "Every Day!!",
+        category = ClubCategory.HOBBY_AND_SPECIAL_INTERESTS
+    ),
+    Club(
+        name = "Basketball Club",
+        room = "Gym",
+        meetingFrequency = "Every Tuesday and Thursday",
+        category = ClubCategory.ATHLETICS
+    ),
+    Club(
+        name = "Horror Club",
+        room = "345",
+        meetingFrequency = "Every Monday",
+        category = ClubCategory.HOBBY_AND_SPECIAL_INTERESTS
+    ),
+    Club(
+        name = "Anime Club",
+        room = "169",
+        meetingFrequency = "Every Day!!",
+        category = ClubCategory.HOBBY_AND_SPECIAL_INTERESTS
+    ),
+    Club(
+        name = "Basketball Club",
+        room = "Gym",
+        meetingFrequency = "Every Tuesday and Thursday",
+        category = ClubCategory.ATHLETICS
     )
 )
