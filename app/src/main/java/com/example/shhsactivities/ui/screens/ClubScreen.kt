@@ -64,6 +64,8 @@ fun ClubScreen(
     var goalPopup by remember { mutableStateOf(false) }
     var rosterPopup by remember { mutableStateOf(false) }
 
+    val clubMembers = viewModel.clubMembers.collectAsState().value
+
     when (clubState) {
         is ClubRetrievalState.Success -> {
             val club = clubState.club
@@ -256,9 +258,26 @@ fun ClubScreen(
                             }
                         }
 
-                        items(club.administrators) {
-                            val user = it?.get()?.result?.toObject<UserData>() ?: testuser
+                        items(clubMembers.filter { it.isAdmin }) {user ->
                             ClubMemberItem(user = user, onClickContact = { /*TODO*/ }, modifier = Modifier.fillMaxWidth())
+                        }
+
+                        item {
+                            Spacer(modifier = Modifier.padding(vertical = 20.dp))
+                            Column(modifier = Modifier.padding(horizontal = 10.dp)) {
+                                Text(
+                                    text = "Members",
+                                    style = Typography.headlineMedium
+                                )
+                                Divider()
+                            }
+                        }
+                        items(clubMembers.filter { !it.isAdmin }) { user ->
+                            ClubMemberItem(user = user, onClickContact = { /*TODO*/ }, modifier = Modifier.fillMaxWidth())
+                        }
+
+                        item {
+                            Spacer(modifier = Modifier.padding(vertical = 20.dp))
                         }
                     }
                 }
@@ -269,11 +288,3 @@ fun ClubScreen(
         is ClubRetrievalState.Loading -> TODO()
     }
 }
-
-val testuser = UserData(
-    uid = "BlaBlaBla",
-    email = "kchiem30@gmail.com",
-    username = "Kyle Chiem",
-    profilePictureUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/USMC-06868.jpg/1280px-USMC-06868.jpg",
-    phone = "123-456-7890"
-)

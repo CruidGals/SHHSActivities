@@ -1,6 +1,5 @@
 package com.example.shhsactivities.data.models
 
-import android.media.Image
 import androidx.compose.ui.graphics.Color
 import com.example.shhsactivities.ui.theme.AcademicsColor
 import com.example.shhsactivities.ui.theme.AffinityAndActivismColor
@@ -20,7 +19,6 @@ data class Club(
     val meetingFrequency: String? = "",
     val description: String? = "",
     val category: ClubCategory = ClubCategory.COMMUNITY_AND_SERVICE,
-    val administrators: List<DocumentReference?> = listOf(),
     val members: List<DocumentReference?> = listOf(),
     val announcements: List<Announcement> = listOf()
 )
