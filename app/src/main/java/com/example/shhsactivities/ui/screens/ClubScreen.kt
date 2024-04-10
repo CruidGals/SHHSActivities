@@ -45,6 +45,7 @@ import coil.compose.AsyncImage
 import com.example.shhsactivities.data.models.UserData
 import com.example.shhsactivities.ui.screens.components.AnnouncementItem
 import com.example.shhsactivities.ui.screens.components.ClubMemberItem
+import com.example.shhsactivities.ui.screens.components.ErrorScreen
 import com.example.shhsactivities.ui.screens.components.PopupBox
 import com.example.shhsactivities.ui.states.ClubRetrievalState
 import com.example.shhsactivities.ui.theme.Typography
@@ -284,7 +285,7 @@ fun ClubScreen(
             }
         }
 
-        is ClubRetrievalState.Error -> TODO()
+        is ClubRetrievalState.Error -> ErrorScreen("loading club")
         is ClubRetrievalState.Loading -> TODO()
     }
 }
