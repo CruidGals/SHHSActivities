@@ -66,7 +66,7 @@ class CatalogViewModel @Inject constructor(
     }
 }
 
-val testClubs = listOf(
+private val testClubs = listOf(
     Club(
         name = "Horror Club",
         room = "345",

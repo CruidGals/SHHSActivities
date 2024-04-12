@@ -99,7 +99,7 @@ sealed class ClubScreenEvent {
     data class OnAnnouncementClick(val announcement: Announcement): ClubScreenEvent()
 }
 
-val testuser = UserData(
+private val testuser = UserData(
     uid = "BlaBlaBla",
     email = "kchiem30@gmail.com",
     username = "Kyle Chiem",
@@ -108,7 +108,7 @@ val testuser = UserData(
     isAdmin = true
 )
 
-val testMembers = listOf(testuser) + List(15) {
+private val testMembers = listOf(testuser) + List(15) {
     UserData(
         uid = "asldjsalkdas",
         email = "bruh@gmail.com",
