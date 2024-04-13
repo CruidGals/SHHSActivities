@@ -1,4 +1,4 @@
-package com.example.shhsactivities.ui.screens.components
+package com.example.shhsactivities.ui.components.general
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
