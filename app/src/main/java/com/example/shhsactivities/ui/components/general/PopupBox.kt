@@ -39,9 +39,9 @@ fun PopupBox(
                     modifier = Modifier
                         .width(width.dp)
                         .height(height.dp)
-                        .clip(RoundedCornerShape(15))
+                        .clip(RoundedCornerShape(15.dp))
+                        .border(3.dp, Color.DarkGray, RoundedCornerShape(15.dp))
                         .background(Color.White)
-                        .border(3.dp, Color.DarkGray, RoundedCornerShape(15))
                 ) {
                     content()
                 }

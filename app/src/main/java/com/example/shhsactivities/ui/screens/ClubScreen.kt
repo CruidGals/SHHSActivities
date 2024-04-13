@@ -42,16 +42,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.example.shhsactivities.data.models.UserData
 import com.example.shhsactivities.ui.screens.components.AnnouncementItem
 import com.example.shhsactivities.ui.screens.components.ClubMemberItem
 import com.example.shhsactivities.ui.screens.components.ErrorScreen
-import com.example.shhsactivities.ui.screens.components.PopupBox
+import com.example.shhsactivities.ui.components.general.PopupBox
 import com.example.shhsactivities.ui.states.ClubRetrievalState
 import com.example.shhsactivities.ui.theme.Typography
 import com.example.shhsactivities.ui.viewmodels.ClubViewModel
-import com.google.firebase.firestore.auth.User
-import com.google.firebase.firestore.toObject
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalFoundationApi::class)
@@ -249,7 +246,7 @@ fun ClubScreen(
                         state = memberListState
                     ) {
                         item {
-                            Spacer(modifier = Modifier.padding(vertical = 20.dp))
+                            Spacer(modifier = Modifier.padding(vertical = 10.dp))
                             Column(modifier = Modifier.padding(horizontal = 10.dp)) {
                                 Text(
                                     text = "Leaders",
@@ -275,10 +272,6 @@ fun ClubScreen(
                         }
                         items(clubMembers.filter { !it.isAdmin }) { user ->
                             ClubMemberItem(user = user, onClickContact = { /*TODO*/ }, modifier = Modifier.fillMaxWidth())
-                        }
-
-                        item {
-                            Spacer(modifier = Modifier.padding(vertical = 20.dp))
                         }
                     }
                 }
