@@ -3,6 +3,7 @@ package com.example.shhsactivities.ui.viewmodels
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.shhsactivities.data.GoogleAuthApi
 import com.example.shhsactivities.data.models.UserData
 import com.example.shhsactivities.data.repositories.UserRepository
 import com.example.shhsactivities.ui.states.GoogleApiState
@@ -15,13 +16,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignInViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val googleAuthApi: GoogleAuthApi
 ): ViewModel() {
     data class SignInState(
         val isSignInSuccessful: Boolean = false,
         val userData: UserData? = null,
         val signInError: String? = null
     )
+
+    val googleApi = googleAuthApi
 
     private val _state = MutableStateFlow(SignInState())
     val state = _state.asStateFlow()

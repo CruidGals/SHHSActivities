@@ -24,10 +24,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun SignInScreen(
     onNavigate: () -> Unit,
-    googleAuthApi: GoogleAuthApi,
     viewModel: SignInViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val googleAuthApi = viewModel.googleApi
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = Unit) {
