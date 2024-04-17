@@ -19,6 +19,7 @@ data class Club(
     val meetingFrequency: String? = "",
     val description: String? = "",
     val category: ClubCategory = ClubCategory.COMMUNITY_AND_SERVICE,
+    val administrators: List<DocumentReference?> = listOf(),
     val members: List<DocumentReference?> = listOf(),
     val announcements: List<Announcement> = listOf()
 )
@@ -30,7 +31,7 @@ enum class ClubCategory(val title: String, val color: Color) {
     ARTS("Arts", ArtsColor),
     HOBBY_AND_SPECIAL_INTERESTS("Hobby and Special Interests", HobbyAndSpecialInterestsColor),
     ATHLETICS("Athletics", AthleticsColor),
-    STUDENT_GOVERNMENT_AND_CLASS_CABINET("Student Government and Class Cabinet", StudentGovernmentAndClassCabinetColor),
+    STUDENT_GOVERNMENT_AND_CLASS_CABINET("Student Government & Class Cabinet", StudentGovernmentAndClassCabinetColor),
     PUBLICATIONS("Publications", PublicationsColor)
 }
 

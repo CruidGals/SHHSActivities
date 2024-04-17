@@ -62,8 +62,6 @@ fun ClubScreen(
     var goalPopup by remember { mutableStateOf(false) }
     var rosterPopup by remember { mutableStateOf(false) }
 
-    val clubMembers = viewModel.clubMembers.collectAsState().value
-
     when (clubState) {
         is ClubRetrievalState.Success -> {
             val club = clubState.club
@@ -256,7 +254,7 @@ fun ClubScreen(
                             }
                         }
 
-                        items(clubMembers.filter { it.isAdmin }) {user ->
+                        items(viewModel.clubAdministrators) {user ->
                             ClubMemberItem(user = user, onClickContact = { /*TODO*/ }, modifier = Modifier.fillMaxWidth())
                         }
 
@@ -270,7 +268,7 @@ fun ClubScreen(
                                 Divider()
                             }
                         }
-                        items(clubMembers.filter { !it.isAdmin }) { user ->
+                        items(viewModel.clubMembers.filter { it !in viewModel.clubAdministrators }) { user ->
                             ClubMemberItem(user = user, onClickContact = { /*TODO*/ }, modifier = Modifier.fillMaxWidth())
                         }
                     }

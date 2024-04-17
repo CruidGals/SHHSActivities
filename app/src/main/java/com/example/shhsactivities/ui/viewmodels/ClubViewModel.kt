@@ -34,8 +34,10 @@ class ClubViewModel @Inject constructor(
     var clubId by mutableStateOf("")
         private set
 
-    private val _clubMembers = MutableStateFlow(listOf<UserData>())
-    val clubMembers = _clubMembers.asStateFlow()
+    var clubAdministrators by mutableStateOf(listOf<UserData>())
+        private set
+    var clubMembers by mutableStateOf(listOf<UserData>())
+        private set
 
     init {
         /*savedStateHandle.get<String>("clubId")?.let { id ->
@@ -51,7 +53,11 @@ class ClubViewModel @Inject constructor(
             }
         }*/
 
-        _clubMembers.value = club!!.members.map {
+        clubAdministrators = club!!.administrators.map {
+            it?.get()?.result?.toObject<UserData>() ?: unknownUser
+        }
+
+        clubMembers = club!!.members.map {
             it?.get()?.result?.toObject<UserData>() ?: unknownUser
         }
 
@@ -73,16 +79,8 @@ class ClubViewModel @Inject constructor(
         _clubState.value = ClubRetrievalState.Success(club!!)
         //-------------------------------------------------------
 
-        _clubMembers.value = testMembers
-    }
-
-    fun onEvent(event: ClubScreenEvent) {
-        when (event) {
-            is ClubScreenEvent.OnAnnouncementClick -> TODO()
-            is ClubScreenEvent.OnClubPictureClick -> TODO()
-            is ClubScreenEvent.OnGoalClick -> TODO()
-            is ClubScreenEvent.OnRosterClick -> TODO()
-        }
+        clubMembers = testMembers + testuser
+        clubAdministrators = listOf(testuser)
     }
 }
 
@@ -92,20 +90,12 @@ val unknownUser = UserData (
     profilePictureUrl = "https://upload.wikimedia.org/wikipedia/commons/b/bc/Unknown_person.jpg"
 )
 
-sealed class ClubScreenEvent {
-    data object OnClubPictureClick: ClubScreenEvent()
-    data object OnGoalClick: ClubScreenEvent()
-    data object OnRosterClick: ClubScreenEvent()
-    data class OnAnnouncementClick(val announcement: Announcement): ClubScreenEvent()
-}
-
 private val testuser = UserData(
     uid = "BlaBlaBla",
     email = "kchiem30@gmail.com",
     username = "Kyle Chiem",
     profilePictureUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/USMC-06868.jpg/1280px-USMC-06868.jpg",
-    phone = "123-456-7890",
-    isAdmin = true
+    phone = "123-456-7890"
 )
 
 private val testMembers = listOf(testuser) + List(15) {
