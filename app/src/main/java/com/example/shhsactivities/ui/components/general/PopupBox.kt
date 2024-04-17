@@ -41,7 +41,7 @@ fun PopupBox(
                         .height(height.dp)
                         .clip(RoundedCornerShape(15.dp))
                         .border(3.dp, Color.DarkGray, RoundedCornerShape(15.dp))
-                        .background(Color.White)
+                        .background(Color.White, RoundedCornerShape(15.dp))
                 ) {
                     content()
                 }
