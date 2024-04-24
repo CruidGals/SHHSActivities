@@ -1,10 +1,12 @@
 package com.example.shhsactivities.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shhsactivities.data.models.Club
 import com.example.shhsactivities.data.models.ClubCategory
 import com.example.shhsactivities.data.repositories.ClubRepository
+import com.example.shhsactivities.ui.components.ClubOrder
 import com.example.shhsactivities.ui.components.OrderType
 import com.example.shhsactivities.ui.components.OrderDirection
 import com.example.shhsactivities.ui.states.ClubsRetrievalState
@@ -38,7 +40,7 @@ class CatalogViewModel @Inject constructor(
         else {
             val filteredClubs = clubs.clubs.filter {
                 it.name.contains(text, ignoreCase = true)
-            }.
+            }
 
             ClubsRetrievalState.Success(
                 filteredClubs
@@ -55,10 +57,9 @@ class CatalogViewModel @Inject constructor(
             _allClubs = clubRepository.getAllClubs().map {
                 it.toObject(Club::class.java)!!
             }
-        }
-        _allClubs = testClubs //TESTING
 
-        _clubsQueried.value = ClubsRetrievalState.Success(allClubs)
+            _clubsQueried.value = ClubsRetrievalState.Success(allClubs)
+        }
     }
 
     fun editSearchQuery(query: String) {
@@ -69,60 +70,3 @@ class CatalogViewModel @Inject constructor(
         _searchOrder.value = order
     }
 }
-
-private val testClubs = listOf(
-    Club(
-        name = "Horror Club",
-        room = "345",
-        meetingFrequency = "Every Monday",
-        category = ClubCategory.HOBBY_AND_SPECIAL_INTERESTS
-    ),
-    Club(
-        name = "Anime Club",
-        room = "169",
-        meetingFrequency = "Every Day!!",
-        category = ClubCategory.HOBBY_AND_SPECIAL_INTERESTS
-    ),
-    Club(
-        name = "Basketball Club",
-        room = "Gym",
-        meetingFrequency = "Every Tuesday and Thursday",
-        category = ClubCategory.ATHLETICS
-    ),
-    Club(
-        name = "Horror Club",
-        room = "345",
-        meetingFrequency = "Every Monday",
-        category = ClubCategory.HOBBY_AND_SPECIAL_INTERESTS
-    ),
-    Club(
-        name = "Anime Club",
-        room = "169",
-        meetingFrequency = "Every Day!!",
-        category = ClubCategory.HOBBY_AND_SPECIAL_INTERESTS
-    ),
-    Club(
-        name = "Basketball Club",
-        room = "Gym",
-        meetingFrequency = "Every Tuesday and Thursday",
-        category = ClubCategory.ATHLETICS
-    ),
-    Club(
-        name = "Horror Club",
-        room = "345",
-        meetingFrequency = "Every Monday",
-        category = ClubCategory.HOBBY_AND_SPECIAL_INTERESTS
-    ),
-    Club(
-        name = "Anime Club",
-        room = "169",
-        meetingFrequency = "Every Day!!",
-        category = ClubCategory.HOBBY_AND_SPECIAL_INTERESTS
-    ),
-    Club(
-        name = "Basketball Club",
-        room = "Gym",
-        meetingFrequency = "Every Tuesday and Thursday",
-        category = ClubCategory.ATHLETICS
-    )
-)
