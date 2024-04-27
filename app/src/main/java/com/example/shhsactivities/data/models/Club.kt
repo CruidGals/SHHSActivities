@@ -14,15 +14,28 @@ import java.util.Date
 
 data class Club(
     val name: String = "",
-    val imageUrl: String? = "",
-    val room: String? = "",
-    val meetingFrequency: String? = "",
-    val description: String? = "",
+    val imageUrl: String = "",
+    val room: String = "",
+    val meetingFrequency: String = "",
+    val description: String = "",
     val category: ClubCategory = ClubCategory.COMMUNITY_AND_SERVICE,
     val administrators: List<DocumentReference?> = listOf(),
     val members: List<DocumentReference?> = listOf(),
     val announcements: List<Announcement> = listOf()
-)
+) {
+    fun mapWithoutAnnouncements(): Map<String, Any?> {
+        return mapOf(
+            "name" to name,
+            "imageUrl" to imageUrl,
+            "room" to room,
+            "meetingFrequency" to meetingFrequency,
+            "description" to description,
+            "category" to category,
+            "administrators" to administrators,
+            "members" to members
+        )
+    }
+}
 
 enum class ClubCategory(val title: String, val color: Color) {
     COMMUNITY_AND_SERVICE("Community and Service", CommunityAndServiceColor),

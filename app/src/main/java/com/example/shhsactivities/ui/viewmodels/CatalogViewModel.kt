@@ -55,7 +55,7 @@ class CatalogViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             _allClubs = clubRepository.getAllClubs().map {
-                it.toObject(Club::class.java)!!
+                clubRepository.toObject(it)
             }
 
             _clubsQueried.value = ClubsRetrievalState.Success(allClubs)

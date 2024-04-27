@@ -1,12 +1,15 @@
 package com.example.shhsactivities.data.repositories
 
 import android.util.Log
+import com.example.shhsactivities.data.models.Announcement
 import com.example.shhsactivities.data.models.Club
+import com.example.shhsactivities.data.models.ClubCategory
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.tasks.await
 import java.util.concurrent.CancellationException
 
@@ -15,11 +18,15 @@ class ClubRepository {
     private val db = Firebase.firestore
 
     suspend fun addClub(document: Club) {
+        val club = document.mapWithoutAnnouncements()
+
         try {
             db.collection("clubs")
-                .add(document)
-                .addOnSuccessListener {
-                    Log.d(TAG, "Club added with ID: ${it.id}")
+                .add(club)
+                .addOnSuccessListener { clubRef ->
+                    document.announcements.forEach { clubRef.collection("announcements").add(it) }
+
+                    Log.d(TAG, "Club added with ID: ${clubRef.id}")
                 }
                 .addOnFailureListener {
                     Log.w(TAG, "Error adding club", it)
@@ -110,7 +117,36 @@ class ClubRepository {
         return clubs
     }
 
+    @Suppress("UNCHECKED_CAST")
+    suspend fun toObject(docSnapshot: DocumentSnapshot): Club {
+        var announcements: List<Announcement> = listOf()
+
+        docSnapshot.reference.collection("announcements")
+            .get()
+            .addOnSuccessListener { announcementsSnapshot ->
+                announcements = announcementsSnapshot.documents.map {
+                    it.toObject(Announcement::class.java)!!
+                }
+            }
+
+        return Club(
+            name = docSnapshot.getString("name") ?: "",
+            imageUrl = docSnapshot.getString("imageUrl") ?: "",
+            room = docSnapshot.getString("room") ?: "",
+            meetingFrequency = docSnapshot.getString("meetingFrequency") ?: "",
+            description = docSnapshot.getString("description") ?: "",
+            category = try {
+                ClubCategory.valueOf(docSnapshot.getString("category") ?: "")
+            } catch (e: Exception) {
+                ClubCategory.PUBLICATIONS
+            },
+            administrators = docSnapshot.get("administrators") as? List<DocumentReference> ?: listOf(),
+            members = docSnapshot.get("members") as? List<DocumentReference> ?: listOf(),
+            announcements = announcements
+        )
+    }
+
     companion object {
-        const val TAG = "UserRepository"
+        const val TAG = "ClubRepository"
     }
 }
