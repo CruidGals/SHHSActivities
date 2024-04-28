@@ -1,6 +1,7 @@
 package com.example.shhsactivities.ui.viewmodels
 
 import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shhsactivities.data.models.Club
@@ -21,10 +22,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CatalogViewModel @Inject constructor(
-    private val clubRepository: ClubRepository
+    private val clubRepository: ClubRepository,
+    savedStateHandle: SavedStateHandle
 ): ViewModel() {
-    private var _allClubs: List<Club> = emptyList()
-    val allClubs get() = _allClubs
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
@@ -32,19 +32,24 @@ class CatalogViewModel @Inject constructor(
     private val _searchOrder = MutableStateFlow<OrderType>(OrderType.Title(OrderDirection.Ascending))
     val searchOrder = _searchOrder.asStateFlow()
 
-    private val _clubsQueried = MutableStateFlow(ClubsRetrievalState.Success(allClubs))
+    private val _clubsQueried = MutableStateFlow<ClubsRetrievalState>(ClubsRetrievalState.Loading)
     val clubsQueried = combine(_searchQuery, _clubsQueried, _searchOrder) { text, clubs, order ->
-        if (text.isBlank()) {
-            clubs
-        }
-        else {
-            val filteredClubs = clubs.clubs.filter {
-                it.name.contains(text, ignoreCase = true)
-            }
+        when(clubs) {
+            is ClubsRetrievalState.Success -> {
+                if (text.isBlank()) {
+                    clubs
+                }
+                else {
+                    val filteredClubs = clubs.clubs.filter {
+                        it.name.contains(text, ignoreCase = true)
+                    }
 
-            ClubsRetrievalState.Success(
-                filteredClubs
-            )
+                    ClubsRetrievalState.Success(
+                        filteredClubs
+                    )
+                }
+            }
+            else -> clubs
         }
     }.stateIn(
         viewModelScope,
@@ -54,11 +59,25 @@ class CatalogViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            _allClubs = clubRepository.getAllClubs().map {
-                clubRepository.toObject(it)
-            }
+            viewModelScope.launch {
+                savedStateHandle.get<String>("clubIds")?.let { clubIds ->
+                    //If no parameters for specific club Ids passed, retrieves all clubs in database
+                    if (clubIds.isBlank()) {
+                        _clubsQueried.value = ClubsRetrievalState.Success(
+                            clubRepository.getAllClubs().map { clubRepository.toObject(it) }
+                        )
+                    } else {
+                        val clubs = clubIds.split(",").map { id ->
+                            val snapshot = clubRepository.getClubById(id)
 
-            _clubsQueried.value = ClubsRetrievalState.Success(allClubs)
+                            //TODO If club isn't found, maybe remove?
+                            snapshot?.let { clubRepository.toObject(it) } ?: Club()
+                        }
+
+                        _clubsQueried.value = ClubsRetrievalState.Success(clubs)
+                    }
+                }
+            }
         }
     }
 

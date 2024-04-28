@@ -22,6 +22,8 @@ import com.example.shhsactivities.ui.components.general.ClubOrderRow
 import com.example.shhsactivities.ui.viewmodels.CatalogViewModel
 import com.example.shhsactivities.ui.components.general.SearchBar
 import com.example.shhsactivities.ui.screens.components.ClubCatalogItem
+import com.example.shhsactivities.ui.screens.components.ErrorScreen
+import com.example.shhsactivities.ui.states.ClubsRetrievalState
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -67,8 +69,14 @@ fun CatalogScreen(
                 )
             }
 
-            items(queriedClubs.clubs) { club ->
-                ClubCatalogItem(club = club) { onClickClub(it) }
+            when(queriedClubs) {
+                is ClubsRetrievalState.Success -> {
+                    items(queriedClubs.clubs) { club ->
+                        ClubCatalogItem(club = club) { onClickClub(it) }
+                    }
+                }
+                ClubsRetrievalState.Error -> item { ErrorScreen() }
+                ClubsRetrievalState.Loading -> item { }
             }
         }
     }
