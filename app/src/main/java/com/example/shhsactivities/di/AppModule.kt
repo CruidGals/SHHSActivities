@@ -1,5 +1,6 @@
 package com.example.shhsactivities.di
 
+import com.example.shhsactivities.data.GoogleAuthApi
 import com.example.shhsactivities.data.repositories.ClubRepository
 import com.example.shhsactivities.data.repositories.UserRepository
 import com.example.shhsactivities.ui.components.ClubOrder
@@ -23,6 +24,6 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideClubOrder(): ClubOrder = ClubOrder()
+    fun provideClubOrder(userRepository: UserRepository, googleAuthApi: GoogleAuthApi): ClubOrder = ClubOrder(userRepository, googleAuthApi)
 
 }

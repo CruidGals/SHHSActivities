@@ -1,26 +1,55 @@
 package com.example.shhsactivities.ui.components
 
+import com.example.shhsactivities.data.GoogleAuthApi
 import com.example.shhsactivities.data.models.Club
 import com.example.shhsactivities.data.models.ClubCategory
+import com.example.shhsactivities.data.models.UserData
+import com.example.shhsactivities.data.repositories.UserRepository
 import com.google.firebase.firestore.DocumentReference
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
+import javax.inject.Singleton
 
-class ClubOrder {
+class ClubOrder(
+    private val userRepository: UserRepository,
+    private val googleAuthApi: GoogleAuthApi
+) {
+    private val signedInUser = runBlocking {
+        coroutineScope {
+            val deferredUser = async { userRepository.getUser(googleAuthApi.getSignedInUser()?.uid ?: "1aBcDeFg") }
+            val user = deferredUser.await()
+            user?.reference
+        }
+    }
+
     fun getClubs(
-        user: DocumentReference,
         clubs: List<Club>,
-        orderType: OrderType
+        order: OrderType
     ): List<Club> {
-        return when (orderType.direction) {
+        val filteredClubs = if(order.categories.isEmpty()) clubs else clubs.filter { it.category in order.categories }
+
+        return when (order.direction) {
             is OrderDirection.Ascending -> {
-                when (orderType) {
-                    is OrderType.Title -> clubs.sortedBy { it.name.lowercase() }
-                    is OrderType.Leadership -> clubs.sortedBy { it.}
+                when (order) {
+                    is OrderType.Title -> filteredClubs.sortedBy { it.name.lowercase() }
+                    is OrderType.Leadership -> {
+                        filteredClubs.filter { signedInUser in it.administrators }
+                            .sortedBy { it.name.lowercase() } +
+                                filteredClubs.filter { signedInUser !in it.administrators }
+                                    .sortedBy { it.name.lowercase() }
+                    }
                 }
             }
             is OrderDirection.Descending -> {
-                when (orderType) {
-                    is OrderType.Title -> recipes.sortedByDescending { it.title.lowercase() }
-                    is OrderType.Difficulty -> recipes.sortedByDescending { it.difficulty.length }
+                when (order) {
+                    is OrderType.Title -> filteredClubs.sortedByDescending { it.name.lowercase() }
+                    is OrderType.Leadership -> {
+                        filteredClubs.filter { signedInUser !in it.administrators }
+                            .sortedBy { it.name.lowercase() } +
+                                filteredClubs.filter { signedInUser in it.administrators }
+                                    .sortedBy { it.name.lowercase() }
+                    }
                 }
             }
         }
