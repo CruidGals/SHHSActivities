@@ -9,6 +9,7 @@ import com.example.shhsactivities.data.models.Announcement
 import com.example.shhsactivities.data.models.Club
 import com.example.shhsactivities.data.models.ClubCategory
 import com.example.shhsactivities.data.models.UserData
+import com.example.shhsactivities.data.models.unknownUser
 import com.example.shhsactivities.data.repositories.ClubRepository
 import com.example.shhsactivities.ui.states.ClubRetrievalState
 import com.google.firebase.firestore.toObject
@@ -83,12 +84,6 @@ class ClubViewModel @Inject constructor(
         clubAdministrators = listOf(testuser)
     }
 }
-
-val unknownUser = UserData (
-    uid = "",
-    username = "Unknown User",
-    profilePictureUrl = "https://upload.wikimedia.org/wikipedia/commons/b/bc/Unknown_person.jpg"
-)
 
 private val testuser = UserData(
     uid = "BlaBlaBla",
