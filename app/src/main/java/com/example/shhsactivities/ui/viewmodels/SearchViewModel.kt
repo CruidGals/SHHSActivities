@@ -1,20 +1,14 @@
 package com.example.shhsactivities.ui.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.shhsactivities.data.GoogleAuthApi
 import com.example.shhsactivities.data.models.Club
-import com.example.shhsactivities.data.models.ClubCategory
-import com.example.shhsactivities.data.models.UserData
 import com.example.shhsactivities.data.repositories.ClubRepository
-import com.example.shhsactivities.data.repositories.UserRepository
 import com.example.shhsactivities.ui.components.ClubOrder
 import com.example.shhsactivities.ui.components.OrderType
 import com.example.shhsactivities.ui.components.OrderDirection
 import com.example.shhsactivities.ui.states.ClubsRetrievalState
-import com.google.firebase.firestore.DocumentReference
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,7 +16,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
