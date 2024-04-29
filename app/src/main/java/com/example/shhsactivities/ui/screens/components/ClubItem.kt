@@ -28,7 +28,7 @@ import com.example.shhsactivities.ui.theme.Typography
 import kotlinx.coroutines.launch
 
 @Composable
-fun ClubCatalogItem(
+fun ClubItem(
     club: Club,
     modifier: Modifier = Modifier,
     onClick: (club: Club) -> Unit
@@ -93,7 +93,7 @@ fun ClubCatalogItem(
 @Preview
 @Composable
 fun PreviewClubCatalogWidget() {
-    ClubCatalogItem(
+    ClubItem(
         club = Club(
             name = "Bruh Club",
             imageUrl = "https://lh3.googleusercontent.com/usAj44Gr-NlCTP3mtz8ia2VDYcQE3LHbYpchNMogeWmPxNclarBl3skO5plQWbHmEmKzEPKDexf2Kop2ME8L4edc=s274",
