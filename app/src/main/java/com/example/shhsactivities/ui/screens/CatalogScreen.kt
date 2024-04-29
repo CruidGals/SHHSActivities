@@ -3,7 +3,10 @@ package com.example.shhsactivities.ui.screens
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,6 +26,7 @@ import com.example.shhsactivities.ui.viewmodels.CatalogViewModel
 import com.example.shhsactivities.ui.components.general.SearchBar
 import com.example.shhsactivities.ui.screens.components.ClubCatalogItem
 import com.example.shhsactivities.ui.screens.components.ErrorScreen
+import com.example.shhsactivities.ui.screens.components.LoadingScreen
 import com.example.shhsactivities.ui.states.ClubsRetrievalState
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -41,10 +45,13 @@ fun CatalogScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            stickyHeader {
+        Column {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.LightGray)
+                    .padding(bottom = 5.dp)
+            ) {
                 SearchBar(
                     query = searchQuery,
                     onQueryTextChange = { viewModel.editSearchQuery(it)},
@@ -71,12 +78,16 @@ fun CatalogScreen(
 
             when(queriedClubs) {
                 is ClubsRetrievalState.Success -> {
-                    items(queriedClubs.clubs) { club ->
-                        ClubCatalogItem(club = club) { onClickClub(it) }
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(queriedClubs.clubs) { club ->
+                            ClubCatalogItem(club = club) { onClickClub(it) }
+                        }
                     }
                 }
-                ClubsRetrievalState.Error -> item { ErrorScreen() }
-                ClubsRetrievalState.Loading -> item { }
+                ClubsRetrievalState.Error -> ErrorScreen("loading clubs")
+                ClubsRetrievalState.Loading -> LoadingScreen()
             }
         }
     }
