@@ -5,12 +5,12 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -29,7 +29,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shhsactivities.data.models.Club
-import com.example.shhsactivities.ui.screens.components.ClubCatalogItem
+import com.example.shhsactivities.ui.screens.components.ClubItem
+import com.example.shhsactivities.ui.screens.components.ErrorScreen
+import com.example.shhsactivities.ui.screens.components.LoadingScreen
+import com.example.shhsactivities.ui.screens.components.MiniClubItem
+import com.example.shhsactivities.ui.states.ClubsRetrievalState
 import com.example.shhsactivities.ui.theme.Typography
 import com.example.shhsactivities.ui.viewmodels.HomeViewModel
 
@@ -39,8 +43,8 @@ fun HomeScreen(
     onClickClub: (Club) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val queriedClubs = viewModel.clubsQueried.collectAsState().value
-    val searchQuery = viewModel.searchQuery.collectAsState().value
+    val user = viewModel.user.collectAsState().value
+    val userClubs = viewModel.userClubs.collectAsState().value
 
     Box(
         modifier = Modifier
@@ -104,8 +108,23 @@ fun HomeScreen(
                 }
             }
 
-            items(queriedClubs.clubs) { club ->
-                ClubCatalogItem(club = club) { onClickClub(it) }
+            item {
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    when(userClubs) {
+                        is ClubsRetrievalState.Success -> {
+                            items(userClubs.clubs) {
+                                MiniClubItem(club = it, onClick = {
+                                    //TODO add
+                                })
+                            }
+                        }
+                        ClubsRetrievalState.Error -> item { ErrorScreen("loading clubs") }
+                        ClubsRetrievalState.Loading -> item{ LoadingScreen() }
+                    }
+                }
             }
         }
     }

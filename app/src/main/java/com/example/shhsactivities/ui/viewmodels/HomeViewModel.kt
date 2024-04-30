@@ -8,11 +8,13 @@ import com.example.shhsactivities.data.GoogleAuthApi
 import com.example.shhsactivities.data.models.Club
 import com.example.shhsactivities.data.models.ClubCategory
 import com.example.shhsactivities.data.models.UserData
+import com.example.shhsactivities.data.models.unknownUser
 import com.example.shhsactivities.data.repositories.ClubRepository
 import com.example.shhsactivities.data.repositories.UserRepository
 import com.example.shhsactivities.ui.states.ClubsRetrievalState
-import com.example.shhsactivities.ui.components.ClubOrder
+import com.example.shhsactivities.ui.components.OrderType
 import com.example.shhsactivities.ui.components.OrderDirection
+import com.google.firebase.firestore.auth.User
 import com.google.firebase.firestore.toObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -23,97 +25,35 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val clubRepository: ClubRepository,
-    savedStateHandle: SavedStateHandle
+    private val googleAuthApi: GoogleAuthApi
 ): ViewModel() {
 
-    private val _searchQuery = MutableStateFlow("")
-    val searchQuery = _searchQuery.asStateFlow()
+    private val _user = MutableStateFlow(unknownUser)
+    val user = _user.asStateFlow()
 
-    private val _clubsQueried = MutableStateFlow(ClubsRetrievalState.Success(listOf()))
-    val clubsQueried = searchQuery
-        .combine(_clubsQueried) { text, clubs ->
-            if (text.isBlank()) {
-                clubs
-            }
-            else {
-                ClubsRetrievalState.Success(
-                    queryClubsByOrder()
-                )
-            }
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
-            _clubsQueried.value
-        )
+    private val _userClubs = MutableStateFlow<ClubsRetrievalState>(ClubsRetrievalState.Loading)
+    val userClubs = _userClubs.asStateFlow()
 
-    private val user = savedStateHandle.getLiveData<UserData>("user").value
+    //When accessing search bar, it requires a list of club Ids.
+    private var userClubsIds: List<String>? = null
 
     init {
         viewModelScope.launch {
-            val userReference = user?.let { userRepository.getUser(it.uid)?.reference }
-            val userClubsSnapshot = userReference?.let { clubRepository.getClubsByMember(it) }
-            _clubsQueried.value = ClubsRetrievalState.Success(
-                userClubsSnapshot?.map { club ->
-                    club.toObject<Club>() ?: Club()
-                } ?: listOf()
+            val userSnapshot = userRepository.getUser(googleAuthApi.getSignedInUser()?.uid ?: "1aBcDeFg")
+            val userRef = userSnapshot?.reference
+            _user.value = userSnapshot?.toObject(UserData::class.java) ?: unknownUser
+
+            val userClubsSnapshot = userSnapshot?.reference?.let { clubRepository.getClubsByMember(it) }
+            userClubsIds = userClubsSnapshot?.map { it.id }
+            val clubs = userClubsSnapshot?.map { clubRepository.toObject(it) } ?: listOf()
+
+
+            _userClubs.value = ClubsRetrievalState.Success(
+                clubs.filter { userRef in it.administrators }
+                    .sortedBy { it.name.lowercase() } +
+                        clubs.filter { userRef !in it.administrators }
+                            .sortedBy { it.name.lowercase() }
             )
-
-
-            //TESTING
-            _clubsQueried.value = ClubsRetrievalState.Success(testClubs)
         }
-    }
-
-    //TODO Include this function in teh above combine function
-    fun queryClubsByOrder(order: ClubOrder = ClubOrder.Title(OrderDirection.Ascending)): List<Club> {
-        var clubs: List<Club> = listOf()
-
-        viewModelScope.launch {
-            clubs = listOf() //TODO Repository
-            clubs.map { clubs ->
-                when(order.direction) {
-                    is OrderDirection.Ascending -> {
-                        when(order) {
-                            is ClubOrder.Leadership -> TODO()
-                            is ClubOrder.Title -> TODO()
-                        }
-                    }
-                    is OrderDirection.Descending -> {
-                        when(order) {
-                            is ClubOrder.Leadership -> TODO()
-                            is ClubOrder.Title -> TODO()
-                        }
-                    }
-                }
-            }
-        }
-
-        return clubs
-    }
-
-    fun editSearchQuery(query: String) {
-        _searchQuery.value = query
-        Log.d("Catalog", _clubsQueried.value.clubs.size.toString())
     }
 }
-
-private val testClubs = listOf(
-    Club(
-        name = "Horror Club",
-        room = "345",
-        meetingFrequency = "Every Monday",
-        category = ClubCategory.HOBBY_AND_SPECIAL_INTERESTS
-    ),
-    Club(
-        name = "Anime Club",
-        room = "169",
-        meetingFrequency = "Every Day!!",
-        category = ClubCategory.HOBBY_AND_SPECIAL_INTERESTS
-    ),
-    Club(
-        name = "Basketball Club",
-        room = "Gym",
-        meetingFrequency = "Every Tuesday and Thursday",
-        category = ClubCategory.ATHLETICS
-    )
-)

@@ -6,9 +6,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -90,10 +93,72 @@ fun ClubItem(
     }
 }
 
+@Composable
+fun MiniClubItem(
+    club: Club,
+    modifier: Modifier = Modifier,
+    onClick: (club: Club) -> Unit
+) {
+    val scope = rememberCoroutineScope()
+
+    Box(
+        modifier = Modifier
+            .padding(8.dp)
+            .clip(RoundedCornerShape(15.dp))
+            .clickable {
+                scope.launch {
+                    onClick(club)
+                }
+            }
+    ) {
+        Row (modifier = Modifier
+            .width(200.dp)
+            .height(100.dp)
+            .background(club.category.color)
+            .then(modifier)
+        ){
+            Column (
+                modifier = Modifier
+                    .weight(0.70f)
+                    .padding(horizontal = 8.dp)
+                    .fillMaxHeight(),
+                verticalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Text(
+                    text = club.name,
+                    style = Typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "Room ${club.room}",
+                    fontStyle = FontStyle.Italic,
+                    style = Typography.labelMedium
+                )
+            }
+
+            Column(
+                modifier = Modifier.weight(.30f),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                AsyncImage(
+                    model = club.imageUrl,
+                    contentDescription = "Profile Picture",
+                    modifier = Modifier
+                        .size(80.dp)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+            }
+
+        }
+    }
+}
+
 @Preview
 @Composable
-fun PreviewClubCatalogWidget() {
-    ClubItem(
+fun PreviewMiniClub() {
+    MiniClubItem(
         club = Club(
             name = "Bruh Club",
             imageUrl = "https://lh3.googleusercontent.com/usAj44Gr-NlCTP3mtz8ia2VDYcQE3LHbYpchNMogeWmPxNclarBl3skO5plQWbHmEmKzEPKDexf2Kop2ME8L4edc=s274",
@@ -101,7 +166,6 @@ fun PreviewClubCatalogWidget() {
             meetingFrequency = "Every Friday",
         ),
         modifier = Modifier
-            .fillMaxWidth()
             .padding(8.dp),
         onClick = {}
     )
