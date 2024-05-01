@@ -21,21 +21,22 @@ import com.example.shhsactivities.ui.theme.Typography
 
 @Composable
 fun ErrorScreen(
+    modifier: Modifier = Modifier,
     error: String = ""
 ) {
     Column(
-        modifier = Modifier.fillMaxSize().background(Color.White),
+        modifier = modifier,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
             Icons.Default.Warning,
             Icons.Default.Warning.name,
-            Modifier.scale(5f)
+            Modifier.scale(3f)
         )
 
         Text(
-            modifier = Modifier.padding(vertical = 40.dp),
+            modifier = Modifier.padding(vertical = 20.dp),
             text = "Error $error",
             style = Typography.headlineSmall,
             color = Color.DarkGray
@@ -46,5 +47,5 @@ fun ErrorScreen(
 @Preview
 @Composable
 fun PreviewErrorScreen() {
-    ErrorScreen("loading clubs")
+    ErrorScreen(error = "loading clubs")
 }

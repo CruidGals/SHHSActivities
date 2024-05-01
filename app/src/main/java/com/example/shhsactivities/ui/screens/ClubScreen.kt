@@ -46,6 +46,7 @@ import com.example.shhsactivities.ui.screens.components.AnnouncementItem
 import com.example.shhsactivities.ui.screens.components.ClubMemberItem
 import com.example.shhsactivities.ui.screens.components.ErrorScreen
 import com.example.shhsactivities.ui.components.general.PopupBox
+import com.example.shhsactivities.ui.screens.components.LoadingScreen
 import com.example.shhsactivities.ui.states.ClubRetrievalState
 import com.example.shhsactivities.ui.theme.Typography
 import com.example.shhsactivities.ui.viewmodels.ClubViewModel
@@ -276,7 +277,7 @@ fun ClubScreen(
             }
         }
 
-        is ClubRetrievalState.Error -> ErrorScreen("loading club")
-        is ClubRetrievalState.Loading -> TODO()
+        is ClubRetrievalState.Error -> ErrorScreen(modifier = Modifier.fillMaxWidth(), error = "loading club")
+        is ClubRetrievalState.Loading -> LoadingScreen(modifier = Modifier.fillMaxWidth())
     }
 }

@@ -23,7 +23,7 @@ import com.example.shhsactivities.ui.components.OrderDirection
 import com.example.shhsactivities.ui.components.general.ClubOrderRow
 import com.example.shhsactivities.ui.viewmodels.CatalogViewModel
 import com.example.shhsactivities.ui.components.general.SearchBar
-import com.example.shhsactivities.ui.screens.components.ClubCatalogItem
+import com.example.shhsactivities.ui.screens.components.ClubItem
 import com.example.shhsactivities.ui.screens.components.ErrorScreen
 import com.example.shhsactivities.ui.screens.components.LoadingScreen
 import com.example.shhsactivities.ui.states.ClubsRetrievalState
@@ -81,12 +81,12 @@ fun CatalogScreen(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(queriedClubs.clubs) { club ->
-                            ClubCatalogItem(club = club) { onClickClub(it) }
+                            ClubItem(club = club) { onClickClub(it) }
                         }
                     }
                 }
-                ClubsRetrievalState.Error -> ErrorScreen("loading clubs")
-                ClubsRetrievalState.Loading -> LoadingScreen()
+                ClubsRetrievalState.Error -> ErrorScreen(modifier = Modifier.fillMaxSize(), error = "loading clubs")
+                ClubsRetrievalState.Loading -> LoadingScreen(modifier = Modifier.fillMaxSize())
             }
         }
     }

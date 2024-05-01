@@ -10,9 +10,11 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 
 @Composable
-fun LoadingScreen() {
+fun LoadingScreen(
+    modifier: Modifier = Modifier
+) {
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier
     ) {
         CircularProgressIndicator(
             modifier = Modifier.align(Alignment.Center).alpha(0.6f),
