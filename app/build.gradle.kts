@@ -90,6 +90,9 @@ dependencies {
     //One Tap Client
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 
+    //Gson
+    implementation("com.google.code.gson:gson:2.10.1")
+
 }
 
 kapt {

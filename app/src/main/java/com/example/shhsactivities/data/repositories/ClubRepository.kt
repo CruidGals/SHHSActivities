@@ -11,6 +11,7 @@ import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.tasks.await
+import java.util.Date
 import java.util.concurrent.CancellationException
 
 
@@ -127,7 +128,7 @@ class ClubRepository {
                 announcements = announcementsSnapshot.documents.map {
                     it.toObject(Announcement::class.java)!!
                 }
-            }
+            }.await()
 
         return Club(
             name = docSnapshot.getString("name") ?: "",

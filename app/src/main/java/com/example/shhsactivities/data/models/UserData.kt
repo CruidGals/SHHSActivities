@@ -12,3 +12,9 @@ data class UserData(
     val phone: String? = null,
     val isAdmin: Boolean = false
 )
+
+val unknownUser = UserData (
+    uid = "",
+    username = "Unknown User",
+    profilePictureUrl = "https://upload.wikimedia.org/wikipedia/commons/b/bc/Unknown_person.jpg"
+)
