@@ -17,6 +17,7 @@ import com.example.shhsactivities.data.repositories.UserRepository
 import com.example.shhsactivities.ui.states.ClubsRetrievalState
 import com.example.shhsactivities.ui.components.OrderType
 import com.example.shhsactivities.ui.components.OrderDirection
+import com.example.shhsactivities.ui.states.UserRetrievalState
 import com.google.firebase.firestore.auth.User
 import com.google.firebase.firestore.toObject
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,7 +35,7 @@ class HomeViewModel @Inject constructor(
     private val googleAuthApi: GoogleAuthApi
 ): ViewModel() {
 
-    private val _user = MutableStateFlow(unknownUser)
+    private val _user = MutableStateFlow<UserRetrievalState>(UserRetrievalState.Loading)
     val user = _user.asStateFlow()
 
     private val _userClubs = MutableStateFlow<ClubsRetrievalState>(ClubsRetrievalState.Loading)
@@ -47,7 +48,9 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             val userSnapshot = userRepository.getUser(googleAuthApi.getSignedInUser()?.uid ?: "1aBcDeFg")
             val userRef = userSnapshot?.reference
-            _user.value = userSnapshot?.toObject(UserData::class.java) ?: unknownUser
+            _user.value = userSnapshot?.toObject(UserData::class.java)
+                ?.let { UserRetrievalState.Success(it) }
+                ?: UserRetrievalState.Success(unknownUser)
 
             val userClubsSnapshot = userSnapshot?.reference?.let { clubRepository.getClubsByMember(it) }
             userClubsIds = userClubsSnapshot?.map { it.id }

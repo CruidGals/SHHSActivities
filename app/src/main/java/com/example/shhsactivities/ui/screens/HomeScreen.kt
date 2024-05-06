@@ -47,6 +47,7 @@ import com.example.shhsactivities.ui.screens.components.ErrorScreen
 import com.example.shhsactivities.ui.screens.components.LoadingScreen
 import com.example.shhsactivities.ui.screens.components.MiniClubItem
 import com.example.shhsactivities.ui.states.ClubsRetrievalState
+import com.example.shhsactivities.ui.states.UserRetrievalState
 import com.example.shhsactivities.ui.theme.Typography
 import com.example.shhsactivities.ui.viewmodels.HomeViewModel
 import java.util.Date
@@ -61,152 +62,158 @@ fun HomeScreen(
     val user = viewModel.user.collectAsState().value
     val userClubs = viewModel.userClubs.collectAsState().value
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
-        val listState = rememberLazyListState()
-        val isFirstVisible = remember { derivedStateOf { listState.firstVisibleItemIndex > 0 } }
+    when(user) {
+        is UserRetrievalState.Success -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+            ) {
+                val listState = rememberLazyListState()
+                val isFirstVisible = remember { derivedStateOf { listState.firstVisibleItemIndex > 0 } }
 
-        LazyColumn(
-            state = listState,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            stickyHeader {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.DarkGray)
-                        .then(Modifier.statusBarsPadding())
-                        .padding(8.dp)
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    AnimatedContent(
-                        targetState = isFirstVisible.value, label = "Header"
-                    ) { isFirstVisible ->
-                        if (isFirstVisible) {
-                            Box {
-                                Text(
-                                    text = "Home",
-                                    style = Typography.titleMedium,
-                                    color = Color.White,
-                                    modifier = Modifier.align(Alignment.Center)
-                                )
-                            }
-                        } else {
-                            Column {
-                                Text(
-                                    text = "Home",
-                                    style = Typography.headlineMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White,
-                                    modifier = Modifier.padding(
-                                        start = 6.dp,
-                                        top = 32.dp,
-                                        bottom = 6.dp
-                                    )
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.LightGray)
-                        .padding(6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "My Clubs",
-                        fontWeight = FontWeight.Bold,
-                        style = Typography.titleLarge,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = Icons.Default.Search.name,
-                        modifier = Modifier.clickable {/*TODO*/ },
-                        tint = Color.Black
-                    )
-                }
-            }
-
-            item {
-                when(userClubs) {
-                    is ClubsRetrievalState.Success -> {
-                        LazyRow(
+                    stickyHeader {
+                        Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(120.dp),
+                                .background(Color.DarkGray)
+                                .then(Modifier.statusBarsPadding())
+                                .padding(8.dp)
+                        ) {
+                            AnimatedContent(
+                                targetState = isFirstVisible.value, label = "Header"
+                            ) { isFirstVisible ->
+                                if (isFirstVisible) {
+                                    Box {
+                                        Text(
+                                            text = "Home",
+                                            style = Typography.titleMedium,
+                                            color = Color.White,
+                                            modifier = Modifier.align(Alignment.Center)
+                                        )
+                                    }
+                                } else {
+                                    Column {
+                                        Text(
+                                            text = "Home",
+                                            style = Typography.headlineMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.White,
+                                            modifier = Modifier.padding(
+                                                start = 6.dp,
+                                                top = 32.dp,
+                                                bottom = 6.dp
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    item {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color.LightGray)
+                                .padding(6.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            items(userClubs.clubs) {
-                                MiniClubItem(club = it, onClick = {
-                                    //TODO add
-                                })
-                            }
+                            Text(
+                                text = "My Clubs",
+                                fontWeight = FontWeight.Bold,
+                                style = Typography.titleLarge,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = Icons.Default.Search.name,
+                                modifier = Modifier.clickable {/*TODO*/ },
+                                tint = Color.Black
+                            )
                         }
                     }
-                    ClubsRetrievalState.Error -> ErrorScreen(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp)
-                        .scale(0.6f), error = "loading clubs")
-                    ClubsRetrievalState.Loading -> LoadingScreen(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp))
-                }
-            }
 
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.LightGray)
-                        .padding(6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Recent Announcements",
-                        fontWeight = FontWeight.Bold,
-                        style = Typography.titleLarge,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
-
-            when(userClubs) {
-                is ClubsRetrievalState.Success -> {
-                    items(userClubs.clubs) { club ->
-                        var dropDownEnabled by remember { mutableStateOf(false) }
-
-                        DropDownMenu(
-                            isExpanded = dropDownEnabled,
-                            onDropDownArrowClick = { dropDownEnabled = !dropDownEnabled },
-                            title = club.name,
-                            color = club.category.color
-                        ) {
-                            viewModel.recentAnnouncementsFromClub(club).forEach { announcement ->
-                                AnnouncementItem(
-                                    announcement = announcement,
+                    item {
+                        when(userClubs) {
+                            is ClubsRetrievalState.Success -> {
+                                LazyRow(
                                     modifier = Modifier
-                                        .background(Color.White)
-                                        .padding(8.dp),
-                                    onClickAnnouncement = { /* TODO */ }
-                                )
+                                        .fillMaxWidth()
+                                        .height(120.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    items(userClubs.clubs) {
+                                        MiniClubItem(club = it, onClick = {
+                                            //TODO add
+                                        })
+                                    }
+                                }
                             }
+                            ClubsRetrievalState.Error -> ErrorScreen(modifier = Modifier
+                                .fillMaxWidth()
+                                .height(120.dp)
+                                .scale(0.6f), error = "loading clubs")
+                            ClubsRetrievalState.Loading -> LoadingScreen(modifier = Modifier
+                                .fillMaxWidth()
+                                .height(120.dp))
                         }
                     }
+
+                    item {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color.LightGray)
+                                .padding(6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Recent Announcements",
+                                fontWeight = FontWeight.Bold,
+                                style = Typography.titleLarge,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+
+                    when(userClubs) {
+                        is ClubsRetrievalState.Success -> {
+                            items(userClubs.clubs) { club ->
+                                var dropDownEnabled by remember { mutableStateOf(false) }
+
+                                DropDownMenu(
+                                    isExpanded = dropDownEnabled,
+                                    onDropDownArrowClick = { dropDownEnabled = !dropDownEnabled },
+                                    title = club.name,
+                                    color = club.category.color
+                                ) {
+                                    viewModel.recentAnnouncementsFromClub(club).forEach { announcement ->
+                                        AnnouncementItem(
+                                            announcement = announcement,
+                                            modifier = Modifier
+                                                .background(Color.White)
+                                                .padding(8.dp),
+                                            onClickAnnouncement = { /* TODO */ }
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        ClubsRetrievalState.Error -> item {ErrorScreen(modifier = Modifier
+                            .fillMaxSize()
+                            .scale(0.6f), error = "loading announcements") }
+                        ClubsRetrievalState.Loading -> item { LoadingScreen(modifier = Modifier
+                            .fillMaxSize()) }
+                    }
                 }
-                ClubsRetrievalState.Error -> item {ErrorScreen(modifier = Modifier
-                    .fillMaxSize()
-                    .scale(0.6f), error = "loading announcements") }
-                ClubsRetrievalState.Loading -> item { LoadingScreen(modifier = Modifier
-                    .fillMaxSize()) }
             }
         }
+        UserRetrievalState.Error -> ErrorScreen(modifier = Modifier.fillMaxSize(), error = "loading user")
+        UserRetrievalState.Loading -> LoadingScreen(modifier = Modifier.fillMaxSize())
     }
 }
