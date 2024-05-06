@@ -53,6 +53,7 @@ class HomeViewModel @Inject constructor(
             userClubsIds = userClubsSnapshot?.map { it.id }
             val clubs = userClubsSnapshot?.map { clubRepository.toObject(it) } ?: listOf()
 
+            // Put clubs that the user is a leader in first, then other clubs.
             _userClubs.value = ClubsRetrievalState.Success(
                 clubs.filter { userRef in it.administrators }
                     .sortedBy { it.name.lowercase() } +
