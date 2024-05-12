@@ -1,9 +1,12 @@
+import com.google.protobuf.gradle.id
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
     id("com.google.gms.google-services")
+    id("com.google.protobuf") version "0.9.4"
 }
 
 android {
@@ -90,11 +93,27 @@ dependencies {
     //One Tap Client
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 
-    //Gson
-    implementation("com.google.code.gson:gson:2.10.1")
-
+    //Datastore
+    implementation("androidx.datastore:datastore:1.1.1")
+    implementation("com.google.protobuf:protobuf-javalite:4.26.1")
 }
 
 kapt {
     correctErrorTypes = true
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:4.26.1"
+    }
+
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                id("java") {
+                    option("lite")
+                }
+            }
+        }
+    }
 }
