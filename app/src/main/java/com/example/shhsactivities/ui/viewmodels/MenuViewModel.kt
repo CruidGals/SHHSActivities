@@ -33,9 +33,14 @@ class MenuViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val userSnapshot = userRepository.getUser(googleAuthApi.getSignedInUser()?.uid ?: "1aBcDeFg")
+            /* val userSnapshot = userRepository.getUser(googleAuthApi.getSignedInUser()?.uid ?: "1aBcDeFg")
             val userData = userSnapshot?.toObject(UserData::class.java) ?: unknownUser
+            _user.value = UserRetrievalState.Success(userData) */
+
+            val userData = toModel(userPreferencesRepository.getUserData())
             _user.value = UserRetrievalState.Success(userData)
+
+            Log.d("Menu", toModel(userPreferencesRepository.getUserData()).toString())
         }
     }
 }

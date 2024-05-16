@@ -11,8 +11,10 @@ import com.example.shhsactivities.data.models.Announcement
 import com.example.shhsactivities.data.models.Club
 import com.example.shhsactivities.data.models.ClubCategory
 import com.example.shhsactivities.data.models.UserData
+import com.example.shhsactivities.data.models.toModel
 import com.example.shhsactivities.data.models.unknownUser
 import com.example.shhsactivities.data.repositories.ClubRepository
+import com.example.shhsactivities.data.repositories.UserPreferencesRepository
 import com.example.shhsactivities.data.repositories.UserRepository
 import com.example.shhsactivities.ui.states.ClubsRetrievalState
 import com.example.shhsactivities.ui.components.OrderType
@@ -32,7 +34,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val clubRepository: ClubRepository,
-    private val googleAuthApi: GoogleAuthApi
+    private val userPreferencesRepository: UserPreferencesRepository
 ): ViewModel() {
 
     private val _user = MutableStateFlow<UserRetrievalState>(UserRetrievalState.Loading)
@@ -46,11 +48,10 @@ class HomeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val userSnapshot = userRepository.getUser(googleAuthApi.getSignedInUser()?.uid ?: "1aBcDeFg")
+            val userData = toModel(userPreferencesRepository.getUserData())
+            _user.value = UserRetrievalState.Success(userData)
+            val userSnapshot = userRepository.getUser(userData.uid)
             val userRef = userSnapshot?.reference
-            _user.value = userSnapshot?.toObject(UserData::class.java)
-                ?.let { UserRetrievalState.Success(it) }
-                ?: UserRetrievalState.Success(unknownUser)
 
             val userClubsSnapshot = userSnapshot?.reference?.let { clubRepository.getClubsByMember(it) }
             userClubsIds = userClubsSnapshot?.map { it.id }
