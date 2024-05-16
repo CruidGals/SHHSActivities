@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option java_package = "com.example.shhsactivities";
+option java_multiple_files = true;
+
+message UserPreferences {
+    UserData user = 1;
+}
+
+message UserData {
+    string uid = 1;
+    string email = 2;
+    string username = 3;
+    string profile_picture_url = 4;
+    string phone = 5;
+    bool is_admin = 6;
+}

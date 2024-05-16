@@ -6,7 +6,7 @@ plugins {
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
     id("com.google.gms.google-services")
-    id("com.google.protobuf") version "0.9.4"
+    id("com.google.protobuf")
 }
 
 android {
@@ -48,6 +48,25 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+
+    protobuf {
+        protoc {
+            artifact = "com.google.protobuf:protoc:4.26.1"
+        }
+
+        generateProtoTasks {
+            all().forEach { task ->
+                task.builtins {
+                    id("java") {
+                        option("lite")
+                    }
+                    id("kotlin") {
+                        option("lite")
+                    }
+                }
+            }
         }
     }
 }
@@ -96,24 +115,9 @@ dependencies {
     //Datastore
     implementation("androidx.datastore:datastore:1.1.1")
     implementation("com.google.protobuf:protobuf-javalite:4.26.1")
+    implementation("com.google.protobuf:protobuf-kotlin-lite:4.26.1")
 }
 
 kapt {
     correctErrorTypes = true
-}
-
-protobuf {
-    protoc {
-        artifact = "com.google.protobuf:protoc:4.26.1"
-    }
-
-    generateProtoTasks {
-        all().forEach { task ->
-            task.builtins {
-                id("java") {
-                    option("lite")
-                }
-            }
-        }
-    }
 }
