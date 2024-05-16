@@ -4,5 +4,8 @@ enum class Routes(var route: String) {
     SIGN_IN("sign_in"),
     PROFILE("profile"),
     SEARCH("search"),
-    HOME("home")
+    HOME("home"),
+    MENU("menu"),
+    NOTIFICATION("notification"),
+    DISPLAY("display")
 }
