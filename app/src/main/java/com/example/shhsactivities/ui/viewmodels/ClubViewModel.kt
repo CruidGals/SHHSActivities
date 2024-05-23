@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.shhsactivities.data.models.Announcement
 import com.example.shhsactivities.data.models.Club
 import com.example.shhsactivities.data.models.ClubCategory
@@ -41,9 +42,9 @@ class ClubViewModel @Inject constructor(
         private set
 
     init {
-        /*savedStateHandle.get<String>("clubId")?.let { id ->
+        savedStateHandle.get<String>("clubId")?.let { id ->
             viewModelScope.launch {
-                club = clubRepository.getClubById(id)?.toObject(Club::class.java)
+                club = clubRepository.getClubById(id)?.let { clubRepository.toObject(it) } ?: Club()
                 clubId = id
 
                 _clubState.value = if(club == null) {
@@ -51,37 +52,16 @@ class ClubViewModel @Inject constructor(
                 } else {
                     ClubRetrievalState.Success(club!!)
                 }
+
+                clubAdministrators = club!!.administrators.map {
+                    it?.get()?.result?.toObject<UserData>() ?: unknownUser
+                }
+
+                clubMembers = club!!.members.map {
+                    it?.get()?.result?.toObject<UserData>() ?: unknownUser
+                }
             }
-        }*/
-
-        clubAdministrators = club!!.administrators.map {
-            it?.get()?.result?.toObject<UserData>() ?: unknownUser
         }
-
-        clubMembers = club!!.members.map {
-            it?.get()?.result?.toObject<UserData>() ?: unknownUser
-        }
-
-        //TESTING--------------------------------------------
-        club = Club(
-            name = "Horror Club",
-            imageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/USMC-06868.jpg/1280px-USMC-06868.jpg",
-            room = "345",
-            meetingFrequency = "Every Monday",
-            description = "We watch horror movies!",
-            category = ClubCategory.HOBBY_AND_SPECIAL_INTERESTS,
-            announcements = List(6) {
-                Announcement(
-                    date = Date(),
-                    description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam finibus ullamcorper tortor in imperdiet. Etiam et cursus justo. Fusce eros est, finibus vitae nisi non, pharetra tristique felis. Phasellus congue ex sed risus efficitur, nec hendrerit lorem elementum. Etiam eget aliquam leo. Aenean sed bibendum nulla. Morbi in consectetur est. Pellentesque eget diam non libero vehicula molestie. Maecenas finibus, ligula ut ultrices ornare, massa velit maximus massa, a mollis eros mi id justo. Pellentesque vitae bibendum felis. Fusce mi arcu, laoreet eget sodales cursus, fermentum in risus. Fusce odio enim, tincidunt at enim id, tincidunt porta libero. Etiam venenatis dignissim lorem non convallis. Morbi dictum augue quis massa dignissim, a dignissim diam convallis.",
-                )
-            }
-        )
-        _clubState.value = ClubRetrievalState.Success(club!!)
-        //-------------------------------------------------------
-
-        clubMembers = testMembers + testuser
-        clubAdministrators = listOf(testuser)
     }
 }
 

@@ -55,14 +55,23 @@ class CatalogViewModel @Inject constructor(
         _clubsQueried.value
     )
 
+    /*
+     * Meant to save some read/write calls to firebase by mapping clubs
+     * to their respective clubIds.
+     */
+    private val _clubIdDict = MutableStateFlow<Map<Club, String>>(mapOf())
+
     init {
         viewModelScope.launch {
             savedStateHandle.get<String>("clubIds")?.let { clubIds ->
                 //If no parameters for specific club Ids passed, retrieves all clubs in database
                 if (clubIds.isBlank()) {
-                    _clubsQueried.value = ClubsRetrievalState.Success(
-                        clubRepository.getAllClubs().map { clubRepository.toObject(it) }
-                    )
+                    val clubsSnapshot = clubRepository.getAllClubs()
+                    val allClubIds = clubsSnapshot.map { it.id }
+                    val clubs = clubsSnapshot.map { clubRepository.toObject(it) }
+
+                    _clubIdDict.value = clubs.zip(allClubIds).toMap()
+                    _clubsQueried.value = ClubsRetrievalState.Success(clubs)
                 } else {
                     val clubs = clubIds.split(",").map { id ->
                         val snapshot = clubRepository.getClubById(id)
@@ -71,11 +80,14 @@ class CatalogViewModel @Inject constructor(
                         snapshot?.let { clubRepository.toObject(it) } ?: Club()
                     }
 
+                    _clubIdDict.value = clubs.zip(clubIds.split(",")).toMap()
                     _clubsQueried.value = ClubsRetrievalState.Success(clubs)
                 }
             }
         }
     }
+
+    fun retrieveIdFromClub(club: Club) = _clubIdDict.value[club]
 
     fun editSearchQuery(query: String) {
         _searchQuery.value = query

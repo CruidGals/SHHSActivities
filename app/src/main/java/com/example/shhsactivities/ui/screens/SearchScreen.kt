@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
@@ -27,11 +28,12 @@ import com.example.shhsactivities.ui.screens.components.ClubItem
 import com.example.shhsactivities.ui.screens.components.ErrorScreen
 import com.example.shhsactivities.ui.screens.components.LoadingScreen
 import com.example.shhsactivities.ui.states.ClubsRetrievalState
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CatalogScreen(
-    onClickClub: (club: Club) -> Unit,
+    onClickClub: (clubId: String) -> Unit,
     viewModel: CatalogViewModel = hiltViewModel()
 ) {
     val searchQuery = viewModel.searchQuery.collectAsState().value
@@ -81,7 +83,9 @@ fun CatalogScreen(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(queriedClubs.clubs) { club ->
-                            ClubItem(club = club) { onClickClub(it) }
+                            ClubItem(club = club) {
+                                onClickClub(viewModel.retrieveIdFromClub(it) ?: "-1")
+                            }
                         }
                     }
                 }

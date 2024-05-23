@@ -1,28 +1,32 @@
 package com.example.shhsactivities
 
+import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
+import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.firebasepractice.ui.screens.ProfileScreen
-import com.example.firebasepractice.ui.screens.SignInScreen
+import androidx.navigation.navArgument
 import com.example.shhsactivities.data.GoogleAuthApi
+import com.example.shhsactivities.data.repositories.UserPreferencesRepository
+import com.example.shhsactivities.navigation.MainScreenNavigation
+import com.example.shhsactivities.ui.screens.CatalogScreen
+import com.example.shhsactivities.ui.screens.HomeScreen
+import com.example.shhsactivities.ui.screens.MenuScreen
+import com.example.shhsactivities.ui.screens.SignInScreen
+import com.example.shhsactivities.ui.screens.TestScreen
 import com.example.shhsactivities.ui.theme.SHHSActivitiesTheme
+import com.example.shhsactivities.util.Routes
+import com.example.shhsactivities.util.userPreferencesStore
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -39,12 +43,28 @@ class MainActivity : ComponentActivity() {
             Firebase.auth
         )
     }
+
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             SHHSActivitiesTheme {
-
+                Surface (
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    MainScreenNavigation(context = applicationContext, googleAuthApi = googleAuthApi, scope = lifecycleScope, startDestination = Routes.SEARCH.route)
+                }
             }
         }
     }
 }
+
+private val testClubIds = listOf(
+    "2WEmBF7dGVPshDa2Lgr9",
+    "Fe0OgLy8NS4qZxzjRfUp",
+    "HdL6Sp6vEMFPQ3RfGPC6",
+    "IBkyb0Tn1ch02lFYVbO6",
+    "ch1bGuAZPfxXO8ap3hTB"
+)
