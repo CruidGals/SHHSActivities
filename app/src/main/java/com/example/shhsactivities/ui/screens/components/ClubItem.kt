@@ -55,6 +55,7 @@ fun ClubItem(
                 modifier = Modifier
                     .weight(0.75f)
                     .padding(horizontal = 8.dp),
+                verticalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = club.name,
@@ -83,7 +84,8 @@ fun ClubItem(
                     model = club.imageUrl,
                     contentDescription = "Profile Picture",
                     modifier = Modifier
-                        .size(80.dp)
+                        .padding(10.dp)
+                        .size(60.dp)
                         .clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
