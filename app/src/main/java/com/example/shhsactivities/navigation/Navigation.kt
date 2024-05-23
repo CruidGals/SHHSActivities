@@ -58,7 +58,7 @@ fun MainScreenNavigation(
             arguments = listOf(
                 navArgument("clubId") {
                     type = NavType.StringType
-                    defaultValue = -1
+                    defaultValue = "-1"
                 }
             )
         ) {

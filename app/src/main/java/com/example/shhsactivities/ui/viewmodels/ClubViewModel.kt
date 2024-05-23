@@ -1,5 +1,6 @@
 package com.example.shhsactivities.ui.viewmodels
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -18,6 +19,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.util.Date
 import javax.inject.Inject
 
@@ -53,13 +55,29 @@ class ClubViewModel @Inject constructor(
                     ClubRetrievalState.Success(club!!)
                 }
 
-                clubAdministrators = club!!.administrators.map {
+                /*
+                 * Will throw "Task not complete" exceptions without the
+                 * addition of await() function.
+                 */
+                try {
+                    clubAdministrators = club!!.administrators.mapNotNull { adminRef ->
+                        adminRef?.get()?.await()?.toObject<UserData>() ?: unknownUser
+                    }
+
+                    clubMembers = club!!.members.mapNotNull { memberRef ->
+                        memberRef?.get()?.await()?.toObject<UserData>() ?: unknownUser
+                    }
+                } catch (e: Exception) {
+                    Log.e("FirestoreError", "Error fetching data", e)
+                }
+
+                /*clubAdministrators = club!!.administrators.map {
                     it?.get()?.result?.toObject<UserData>() ?: unknownUser
                 }
 
                 clubMembers = club!!.members.map {
                     it?.get()?.result?.toObject<UserData>() ?: unknownUser
-                }
+                }*/
             }
         }
     }

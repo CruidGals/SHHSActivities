@@ -87,7 +87,7 @@ class CatalogViewModel @Inject constructor(
         }
     }
 
-    fun retrieveIdFromClub(club: Club) = _clubIdDict.value[club]
+    fun retrieveIdFromClub(club: Club): String? = _clubIdDict.value[club]
 
     fun editSearchQuery(query: String) {
         _searchQuery.value = query
