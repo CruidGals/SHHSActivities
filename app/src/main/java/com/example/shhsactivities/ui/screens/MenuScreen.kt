@@ -71,7 +71,9 @@ fun MenuScreen(
                 }
 
                 Button(
-                    onClick = { onLogOut() },
+                    onClick = {
+                        viewModel.logOut()
+                        onLogOut() },
                     modifier = Modifier.align(Alignment.BottomEnd)
                 ) {
                     Text(text = "Log Out")

@@ -23,9 +23,9 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class MenuViewModel @Inject constructor(
-    userRepository: UserRepository,
-    userPreferencesRepository: UserPreferencesRepository,
-    googleAuthApi: GoogleAuthApi
+    private val userRepository: UserRepository,
+    private val userPreferencesRepository: UserPreferencesRepository,
+    private val googleAuthApi: GoogleAuthApi
 ): ViewModel() {
 
     private val _user = MutableStateFlow<UserRetrievalState>(UserRetrievalState.Loading)
@@ -41,6 +41,12 @@ class MenuViewModel @Inject constructor(
             _user.value = UserRetrievalState.Success(userData)
 
             Log.d("Menu", toModel(userPreferencesRepository.getUserData()).toString())
+        }
+    }
+
+    fun logOut() {
+        viewModelScope.launch {
+            googleAuthApi.signOut()
         }
     }
 }
