@@ -19,6 +19,7 @@ import androidx.navigation.navArgument
 import com.example.shhsactivities.data.GoogleAuthApi
 import com.example.shhsactivities.data.repositories.UserPreferencesRepository
 import com.example.shhsactivities.navigation.MainScreenNavigation
+import com.example.shhsactivities.navigation.NavSetup
 import com.example.shhsactivities.ui.screens.CatalogScreen
 import com.example.shhsactivities.ui.screens.HomeScreen
 import com.example.shhsactivities.ui.screens.MenuScreen
@@ -54,7 +55,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreenNavigation(context = applicationContext, googleAuthApi = googleAuthApi, scope = lifecycleScope, startDestination = Routes.SEARCH.route)
+                    NavSetup()
                 }
             }
         }

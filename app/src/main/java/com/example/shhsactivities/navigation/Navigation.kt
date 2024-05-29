@@ -1,38 +1,87 @@
 package com.example.shhsactivities.navigation
 
-import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.LifecycleCoroutineScope
-import androidx.lifecycle.lifecycleScope
+import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.shhsactivities.data.GoogleAuthApi
 import com.example.shhsactivities.ui.screens.CatalogScreen
 import com.example.shhsactivities.ui.screens.ClubScreen
 import com.example.shhsactivities.ui.screens.HomeScreen
 import com.example.shhsactivities.ui.screens.MenuScreen
 import com.example.shhsactivities.ui.screens.SignInScreen
-import com.example.shhsactivities.ui.screens.TestScreen
 import com.example.shhsactivities.util.Routes
-import kotlinx.coroutines.launch
+import java.util.Locale
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun NavSetup() {
+    val navController = rememberNavController()
+    val showBottomNavBar = rememberSaveable { mutableStateOf(true) }
+    
+    if(getCurrentRoute(navController = navController) == Routes.SIGN_IN.route) {
+        showBottomNavBar.value = false
+    }
+
+    Scaffold(
+        bottomBar = {
+            AnimatedVisibility(
+                visible = showBottomNavBar.value,
+                enter = expandVertically(
+                    animationSpec = tween(durationMillis = 500),
+                    expandFrom = Alignment.Bottom
+                ),
+                exit = shrinkVertically(
+                    animationSpec = tween(durationMillis = 500),
+                    shrinkTowards = Alignment.Bottom
+                ),
+                label = "Bottom Bar"
+            ) {
+                BottomNavigationBar(navController = navController)
+            }
+        }
+    ) { innerPadding ->
+        MainScreenNavigation(
+            modifier = Modifier.padding(innerPadding),
+            showBottomNavBar = showBottomNavBar,
+            navController = navController
+        )
+    }
+}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainScreenNavigation(
-    context: Context,
-    googleAuthApi: GoogleAuthApi,
-    scope: LifecycleCoroutineScope,
+    showBottomNavBar: MutableState<Boolean>,
     modifier: Modifier = Modifier,
-    startDestination: String = Routes.HOME.route
+    navController: NavHostController,
+    startDestination: String = Routes.HOME.route,
 ) {
-    val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = startDestination) {
+    NavHost(
+        modifier = modifier,
+        navController = navController,
+        startDestination = startDestination
+    ) {
         composable(Routes.HOME.route) {
             HomeScreen(onClickClub = {})
         }
@@ -77,12 +126,34 @@ fun MainScreenNavigation(
             MenuScreen(onNavigate = {
                 navController.navigate(it.route)
             }, onLogOut = {
-                scope.launch {
-                    googleAuthApi.signOut()
-                }
-
                 navController.navigate(Routes.SIGN_IN.route)
             })
         }
     }
+}
+
+@Composable
+fun BottomNavigationBar(navController: NavController) {
+    NavigationBar (
+        containerColor = Color.White,
+        contentColor = Color.Gray
+    ) {
+        val currentRoute = getCurrentRoute(navController)
+        BottomNavObject.bottomNavObjectList.forEach { obj ->
+            BottomNavItem(
+                icon = iconVectorFromBottomNavObj(obj),
+                name = obj.route.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
+                selected = obj.validSelectedRoutes.contains(currentRoute),
+                onClick = {
+                    navController.navigate(obj.route)
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun getCurrentRoute(navController: NavController): String? {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    return navBackStackEntry?.destination?.route
 }
