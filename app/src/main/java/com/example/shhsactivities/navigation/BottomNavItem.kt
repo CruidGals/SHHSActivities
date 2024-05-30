@@ -41,7 +41,7 @@ fun BottomNavItem(
     onClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier.clip(RoundedCornerShape(30.dp)).padding(3.dp).clickable { onClick() },
+        modifier = Modifier.padding(3.dp).clickable { onClick() },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(

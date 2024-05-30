@@ -6,6 +6,11 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
@@ -135,19 +140,26 @@ fun MainScreenNavigation(
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     NavigationBar (
+        modifier = Modifier.fillMaxWidth(),
         containerColor = Color.White,
         contentColor = Color.Gray
     ) {
-        val currentRoute = getCurrentRoute(navController)
-        BottomNavObject.bottomNavObjectList.forEach { obj ->
-            BottomNavItem(
-                icon = iconVectorFromBottomNavObj(obj),
-                name = obj.route.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
-                selected = obj.validSelectedRoutes.contains(currentRoute),
-                onClick = {
-                    navController.navigate(obj.route)
-                }
-            )
+        Row(
+            modifier = Modifier.fillMaxSize().background(Color.LightGray),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            val currentRoute = getCurrentRoute(navController)
+            BottomNavObject.bottomNavObjectList.forEach { obj ->
+                BottomNavItem(
+                    icon = iconVectorFromBottomNavObj(obj),
+                    name = obj.route.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
+                    selected = obj.validSelectedRoutes.contains(currentRoute),
+                    onClick = {
+                        navController.navigate(obj.route)
+                    }
+                )
+            }
         }
     }
 }
