@@ -67,14 +67,8 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    //Assuming "recent" means within a week of current day.
+    //Assuming "recent" means latest two announcements posted
     fun recentAnnouncementsFromClub(club: Club): List<Announcement> {
-        val cutoffDate = Calendar.getInstance()
-        cutoffDate.time = Date()
-        cutoffDate.add(Calendar.DAY_OF_YEAR, -7)
-
-        return club.announcements.filter {
-            it.date.after(cutoffDate.time) || it.date == cutoffDate.time
-        }
+        return club.announcements.slice(IntRange(0, 1))
     }
 }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -121,7 +122,7 @@ fun MiniClubItem(
         ){
             Column (
                 modifier = Modifier
-                    .weight(0.70f)
+                    .weight(0.60f)
                     .padding(horizontal = 8.dp)
                     .fillMaxHeight(),
                 verticalArrangement = Arrangement.SpaceEvenly
@@ -139,7 +140,7 @@ fun MiniClubItem(
             }
 
             Column(
-                modifier = Modifier.weight(.30f),
+                modifier = Modifier.fillMaxSize().weight(.40f),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -147,7 +148,7 @@ fun MiniClubItem(
                     model = club.imageUrl,
                     contentDescription = "Profile Picture",
                     modifier = Modifier
-                        .size(80.dp)
+                        .size(50.dp)
                         .clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
