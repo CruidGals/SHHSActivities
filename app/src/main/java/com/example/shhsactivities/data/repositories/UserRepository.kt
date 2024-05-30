@@ -15,14 +15,7 @@ class UserRepository {
 
     suspend fun addUser(document: UserData) {
         try {
-            db.collection("users")
-                .add(document)
-                .addOnSuccessListener {
-                    Log.d(TAG, "User added with ID: ${it.id}")
-                }
-                .addOnFailureListener {
-                    Log.w(TAG, "Error adding user", it)
-                }.await()
+            db.collection("users").add(document).await()
         } catch (e: Exception) {
             e.printStackTrace()
             if (e is CancellationException) throw e
@@ -34,29 +27,15 @@ class UserRepository {
         Use toObject() function to convert back to UserData
      */
     suspend fun getUser(uid: String): DocumentSnapshot? {
-        var user: DocumentSnapshot? = null
-
         try {
-            db.collection("users")
-                .whereEqualTo("uid", uid)
-                .get()
-                .addOnSuccessListener {
-                    try {
-                        user = it.documents[0]
-                        Log.d(TAG, "User with id: $uid retrieved.")
-                    } catch (e: Exception) {
-                        Log.w(TAG, "User with id: $uid not found.")
-                    }
-                }
-                .addOnFailureListener {
-                    Log.w(TAG, "Error retrieving user", it)
-                }.await()
+            val userSnapshot = db.collection("users").whereEqualTo("uid", uid).get().await()
+            return userSnapshot.documents[0]
         } catch (e: Exception) {
             e.printStackTrace()
             if (e is CancellationException) throw e
         }
 
-        return user
+        return null
     }
 
     companion object {

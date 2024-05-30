@@ -22,16 +22,8 @@ class ClubRepository {
         val club = document.mapWithoutAnnouncements()
 
         try {
-            db.collection("clubs")
-                .add(club)
-                .addOnSuccessListener { clubRef ->
-                    document.announcements.forEach { clubRef.collection("announcements").add(it) }
-
-                    Log.d(TAG, "Club added with ID: ${clubRef.id}")
-                }
-                .addOnFailureListener {
-                    Log.w(TAG, "Error adding club", it)
-                }.await()
+            val clubRef = db.collection("clubs").add(club).await()
+            document.announcements.forEach { clubRef.collection("announcements").add(it) }
         } catch (e: Exception) {
             e.printStackTrace()
             if (e is CancellationException) throw e
@@ -39,41 +31,26 @@ class ClubRepository {
     }
 
     suspend fun getAllClubs(): List<DocumentSnapshot> {
-        var clubs: List<DocumentSnapshot> = listOf()
 
         try {
-            val result = db.collection("clubs")
-                .get()
-                .await() // Use await() to wait for the operation to complete in a suspend function
-
-            clubs = result.documents
-            Log.d(TAG, "Retrieved ${clubs.size} clubs.")
+            val result = db.collection("clubs").get().await()
+            return result.documents
         } catch (e: Exception) {
             Log.w(TAG, "Error retrieving clubs", e)
         }
 
-        return clubs
+        return listOf()
     }
 
     suspend fun getClubById(id: String): DocumentSnapshot? {
-        var club: DocumentSnapshot? = null
-
         try {
-            val result = db.collection("clubs")
-                .get()
-                .await() // Use await() to wait for the operation to complete in a suspend function
-
-            club = result.documents.find { it.id == id }
-            if (club != null) {
-                Log.d(TAG, "Retrieved club with id $id")
-            } else {
-                Log.d(TAG, "No club with id $id")
-            }
+            val result = db.collection("clubs").get().await()
+            return result.documents.find { it.id == id }
         } catch (e: Exception) {
             Log.w(TAG, "Error retrieving clubs", e)
         }
 
-        return club
+        return null
     }
 
     suspend fun getClubByName(name: String): DocumentSnapshot {
@@ -93,42 +70,24 @@ class ClubRepository {
         Parameters queryName and query or used for logcat
      */
     private suspend fun getClubsByQuery(filter: Filter, queryName: String = "", query: Any = ""): List<DocumentSnapshot> {
-        var clubs: List<DocumentSnapshot> = listOf()
 
         try {
-            db.collection("clubs")
-                .where(filter)
-                .get()
-                .addOnSuccessListener {
-                    try {
-                        clubs = it.documents
-                        Log.d(TAG, "Clubs (${clubs.size}) with $queryName: $query retrieved.")
-                    } catch (e: Exception) {
-                        Log.w(TAG, "Clubs with $queryName: $query not found.")
-                    }
-                }
-                .addOnFailureListener {
-                    Log.w(TAG, "Error retrieving club", it)
-                }.await()
+            val clubsSnapshot = db.collection("clubs").where(filter).get().await()
+            return clubsSnapshot.documents
         } catch (e: Exception) {
             e.printStackTrace()
             if (e is CancellationException) throw e
         }
 
-        return clubs
+        return listOf()
     }
 
     @Suppress("UNCHECKED_CAST")
     suspend fun toObject(docSnapshot: DocumentSnapshot): Club {
-        var announcements: List<Announcement> = listOf()
-
-        docSnapshot.reference.collection("announcements")
-            .get()
-            .addOnSuccessListener { announcementsSnapshot ->
-                announcements = announcementsSnapshot.documents.map {
-                    it.toObject(Announcement::class.java)!!
-                }
-            }.await()
+        val announcementsSnapshot = docSnapshot.reference.collection("announcements").get().await()
+        val announcements = announcementsSnapshot.documents.mapNotNull {
+            it.toObject(Announcement::class.java)
+        }
 
         return Club(
             name = docSnapshot.getString("name") ?: "",
