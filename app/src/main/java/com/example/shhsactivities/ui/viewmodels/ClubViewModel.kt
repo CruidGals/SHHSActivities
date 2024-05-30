@@ -70,14 +70,6 @@ class ClubViewModel @Inject constructor(
                 } catch (e: Exception) {
                     Log.e("FirestoreError", "Error fetching data", e)
                 }
-
-                /*clubAdministrators = club!!.administrators.map {
-                    it?.get()?.result?.toObject<UserData>() ?: unknownUser
-                }
-
-                clubMembers = club!!.members.map {
-                    it?.get()?.result?.toObject<UserData>() ?: unknownUser
-                }*/
             }
         }
     }
